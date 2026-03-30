@@ -14,6 +14,9 @@ export default defineCliConfig({
     projectId,
     dataset,
   },
+  schemaExtraction: {
+    workspace: 'eu',
+  },
   typegen: {
     path: './sanity/**/*.{ts,tsx,js,jsx}',
     schema: '../sanity.schema.json',

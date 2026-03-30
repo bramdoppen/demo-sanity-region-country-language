@@ -1,29 +1,104 @@
-import {CogIcon} from '@sanity/icons'
-import type {StructureBuilder, StructureResolver} from 'sanity/structure'
-import pluralize from 'pluralize-esm'
+import {CogIcon, EarthGlobeIcon} from '@sanity/icons'
+import type {StructureBuilder, StructureResolverContext} from 'sanity/structure'
 
-/**
- * Structure builder is useful whenever you want to control how documents are grouped and
- * listed in the studio or for adding additional in-studio previews or content to documents.
- * Learn more: https://www.sanity.io/docs/structure-builder-introduction
- */
+const API_VERSION = '2024-01-01'
 
-const DISABLED_TYPES = ['settings', 'assist.instruction.context']
+const HIDDEN_TYPES = ['settings', 'assist.instruction.context', 'translation.metadata']
 
-export const structure: StructureResolver = (S: StructureBuilder) =>
-  S.list()
-    .title('Website Content')
-    .items([
-      ...S.documentTypeListItems()
-        // Remove the "assist.instruction.context" and "settings" content  from the list of content types
-        .filter((listItem: any) => !DISABLED_TYPES.includes(listItem.getId()))
-        // Pluralize the title of each document type.  This is not required but just an option to consider.
-        .map((listItem) => {
-          return listItem.title(pluralize(listItem.getTitle() as string))
-        }),
-      // Settings Singleton in order to view/edit the one particular document for Settings.  Learn more about Singletons: https://www.sanity.io/docs/create-a-link-to-a-single-edit-page-in-your-main-document-type-list
-      S.listItem()
-        .title('Site Settings')
-        .child(S.document().schemaType('settings').documentId('siteSettings'))
-        .icon(CogIcon),
-    ])
+interface Locale {
+  localeId: string
+  title: string
+}
+
+interface Country {
+  _id: string
+  title: string
+  slug: string
+  locales: Locale[]
+}
+
+interface Region {
+  _id: string
+  title: string
+  countries: Country[]
+}
+
+export function createStructure(regionSlug: string) {
+  return (S: StructureBuilder, context: StructureResolverContext) => {
+    const client = context.getClient({apiVersion: API_VERSION})
+
+    return S.list()
+      .title('Content')
+      .items([
+        S.listItem()
+          .title('Pages')
+          .icon(EarthGlobeIcon)
+          .child(() =>
+            client
+              .fetch<Region | null>(
+                `*[_type == "region" && slug.current == $regionSlug][0]{
+                  _id,
+                  title,
+                  "countries": *[_type == "country" && region._ref == ^._id] | order(title asc) {
+                    _id,
+                    title,
+                    "slug": slug.current,
+                    "locales": locales[]->{ localeId, title }
+                  }
+                }`,
+                {regionSlug},
+              )
+              .then((region) => {
+                if (!region) {
+                  return S.list().title('No region found').items([])
+                }
+
+                return S.list()
+                  .title(region.title)
+                  .items(
+                    region.countries.map((country) =>
+                      S.listItem()
+                        .title(country.title)
+                        .child(
+                          S.list()
+                            .title(country.title)
+                            .items(
+                              (country.locales || []).map((loc) => {
+                                const localeId = `${country.slug}_${loc.localeId}`
+                                return S.listItem()
+                                  .title(`${loc.title} (${localeId})`)
+                                  .child(
+                                    S.documentTypeList('page')
+                                      .title(`${country.title} — ${loc.title}`)
+                                      .filter('_type == "page" && locale == $locale')
+                                      .params({locale: localeId})
+                                      .initialValueTemplates([
+                                        S.initialValueTemplateItem('page-by-locale', {
+                                          locale: localeId,
+                                        }),
+                                      ]),
+                                  )
+                              }),
+                            ),
+                        ),
+                    ),
+                  )
+              }),
+          ),
+
+        S.divider(),
+
+        ...S.documentTypeListItems().filter(
+          (item: any) =>
+            !HIDDEN_TYPES.includes(item.getId()) && item.getId() !== 'page',
+        ),
+
+        S.divider(),
+
+        S.listItem()
+          .title('Site Settings')
+          .child(S.document().schemaType('settings').documentId('siteSettings'))
+          .icon(CogIcon),
+      ])
+  }
+}

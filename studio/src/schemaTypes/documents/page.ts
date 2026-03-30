@@ -1,11 +1,6 @@
 import {defineField, defineType} from 'sanity'
 import {DocumentIcon} from '@sanity/icons'
 
-/**
- * Page schema.  Define and edit the fields for the 'page' content type.
- * Learn more: https://www.sanity.io/docs/studio/schema-types
- */
-
 export const page = defineType({
   name: 'page',
   title: 'Page',
@@ -13,27 +8,42 @@ export const page = defineType({
   icon: DocumentIcon,
   fields: [
     defineField({
-      name: 'name',
-      title: 'Name',
+      name: 'title',
+      title: 'Title',
       type: 'string',
       validation: (Rule) => Rule.required(),
     }),
-
     defineField({
       name: 'slug',
       title: 'Slug',
       type: 'slug',
       validation: (Rule) => Rule.required(),
       options: {
-        source: 'name',
+        source: 'title',
         maxLength: 96,
+        isUnique: async (slug, context) => {
+          const {document, getClient} = context
+          const client = getClient({apiVersion: '2024-01-01'})
+          const id = document?._id.replace(/^drafts\./, '')
+          const locale = (document as {locale?: string})?.locale
+          const count = await client.fetch<number>(
+            `count(*[_type == "page" && slug.current == $slug && locale == $locale && !(_id in [$id, $draftId])])`,
+            {slug, locale: locale ?? '', id, draftId: `drafts.${id}`},
+          )
+          return count === 0
+        },
       },
+    }),
+    defineField({
+      name: 'locale',
+      type: 'string',
+      readOnly: true,
+      hidden: true,
     }),
     defineField({
       name: 'heading',
       title: 'Heading',
       type: 'string',
-      validation: (Rule) => Rule.required(),
     }),
     defineField({
       name: 'subheading',
@@ -47,7 +57,6 @@ export const page = defineType({
       of: [{type: 'callToAction'}, {type: 'infoSection'}],
       options: {
         insertMenu: {
-          // Configure the "Add Item" menu to display a thumbnail preview of the content type. https://www.sanity.io/docs/studio/array-type#efb1fe03459d
           views: [
             {
               name: 'grid',

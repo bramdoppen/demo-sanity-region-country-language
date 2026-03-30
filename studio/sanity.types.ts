@@ -127,6 +127,62 @@ export type Button = {
   link?: Link
 }
 
+export type Locale = {
+  _id: string
+  _type: 'locale'
+  _createdAt: string
+  _updatedAt: string
+  _rev: string
+  title: string
+  localeId: string
+}
+
+export type RegionReference = {
+  _ref: string
+  _type: 'reference'
+  _weak?: boolean
+  [internalGroqTypeReferenceTo]?: 'region'
+}
+
+export type LocaleReference = {
+  _ref: string
+  _type: 'reference'
+  _weak?: boolean
+  [internalGroqTypeReferenceTo]?: 'locale'
+}
+
+export type Country = {
+  _id: string
+  _type: 'country'
+  _createdAt: string
+  _updatedAt: string
+  _rev: string
+  title: string
+  slug: Slug
+  region: RegionReference
+  locales: Array<
+    {
+      _key: string
+    } & LocaleReference
+  >
+}
+
+export type Slug = {
+  _type: 'slug'
+  current: string
+  source?: string
+}
+
+export type Region = {
+  _id: string
+  _type: 'region'
+  _createdAt: string
+  _updatedAt: string
+  _rev: string
+  title: string
+  slug: Slug
+}
+
 export type Settings = {
   _id: string
   _type: 'settings'
@@ -181,79 +237,6 @@ export type SanityImageHotspot = {
   y: number
   height: number
   width: number
-}
-
-export type Page = {
-  _id: string
-  _type: 'page'
-  _createdAt: string
-  _updatedAt: string
-  _rev: string
-  name: string
-  slug: Slug
-  heading: string
-  subheading?: string
-  pageBuilder?: Array<
-    | ({
-        _key: string
-      } & CallToAction)
-    | ({
-        _key: string
-      } & InfoSection)
-  >
-}
-
-export type PersonReference = {
-  _ref: string
-  _type: 'reference'
-  _weak?: boolean
-  [internalGroqTypeReferenceTo]?: 'person'
-}
-
-export type Post = {
-  _id: string
-  _type: 'post'
-  _createdAt: string
-  _updatedAt: string
-  _rev: string
-  title: string
-  slug: Slug
-  content?: BlockContent
-  excerpt?: string
-  coverImage?: {
-    asset?: SanityImageAssetReference
-    media?: unknown
-    hotspot?: SanityImageHotspot
-    crop?: SanityImageCrop
-    alt?: string
-    _type: 'image'
-  }
-  date?: string
-  author?: PersonReference
-}
-
-export type Person = {
-  _id: string
-  _type: 'person'
-  _createdAt: string
-  _updatedAt: string
-  _rev: string
-  firstName: string
-  lastName: string
-  picture: {
-    asset?: SanityImageAssetReference
-    media?: unknown
-    hotspot?: SanityImageHotspot
-    crop?: SanityImageCrop
-    alt?: string
-    _type: 'image'
-  }
-}
-
-export type Slug = {
-  _type: 'slug'
-  current: string
-  source?: string
 }
 
 export type SanityAssistInstructionTask = {
@@ -393,6 +376,97 @@ export type SanityAssistSchemaTypeField = {
   >
 }
 
+export type TranslationMetadata = {
+  _id: string
+  _type: 'translation.metadata'
+  _createdAt: string
+  _updatedAt: string
+  _rev: string
+  translations?: InternationalizedArrayReference
+  schemaTypes?: Array<string>
+  slug?: Slug
+}
+
+export type InternationalizedArrayReference = Array<
+  {
+    _key: string
+  } & InternationalizedArrayReferenceValue
+>
+
+export type InternationalizedArrayReferenceValue = {
+  _type: 'internationalizedArrayReferenceValue'
+  value?: PageReference
+  language: string
+}
+
+export type Page = {
+  _id: string
+  _type: 'page'
+  _createdAt: string
+  _updatedAt: string
+  _rev: string
+  title: string
+  slug: Slug
+  locale?: string
+  heading?: string
+  subheading?: string
+  pageBuilder?: Array<
+    | ({
+        _key: string
+      } & CallToAction)
+    | ({
+        _key: string
+      } & InfoSection)
+  >
+}
+
+export type PersonReference = {
+  _ref: string
+  _type: 'reference'
+  _weak?: boolean
+  [internalGroqTypeReferenceTo]?: 'person'
+}
+
+export type Post = {
+  _id: string
+  _type: 'post'
+  _createdAt: string
+  _updatedAt: string
+  _rev: string
+  title: string
+  slug: Slug
+  content?: BlockContent
+  excerpt?: string
+  coverImage?: {
+    asset?: SanityImageAssetReference
+    media?: unknown
+    hotspot?: SanityImageHotspot
+    crop?: SanityImageCrop
+    alt?: string
+    _type: 'image'
+  }
+  date?: string
+  author?: PersonReference
+}
+
+export type Person = {
+  _id: string
+  _type: 'person'
+  _createdAt: string
+  _updatedAt: string
+  _rev: string
+  firstName: string
+  lastName: string
+  picture: {
+    asset?: SanityImageAssetReference
+    media?: unknown
+    hotspot?: SanityImageHotspot
+    crop?: SanityImageCrop
+    alt?: string
+    _type: 'image'
+  }
+}
+
 export type SanityImagePaletteSwatch = {
   _type: 'sanity.imagePaletteSwatch'
   background?: string
@@ -500,14 +574,15 @@ export type AllSanitySchemaTypes =
   | BlockContentTextOnly
   | BlockContent
   | Button
+  | Locale
+  | RegionReference
+  | LocaleReference
+  | Country
+  | Slug
+  | Region
   | Settings
   | SanityImageCrop
   | SanityImageHotspot
-  | Page
-  | PersonReference
-  | Post
-  | Person
-  | Slug
   | SanityAssistInstructionTask
   | SanityAssistTaskStatus
   | SanityAssistSchemaTypeAnnotations
@@ -521,6 +596,13 @@ export type AllSanitySchemaTypes =
   | SanityAssistInstructionFieldRef
   | SanityAssistInstruction
   | SanityAssistSchemaTypeField
+  | TranslationMetadata
+  | InternationalizedArrayReference
+  | InternationalizedArrayReferenceValue
+  | Page
+  | PersonReference
+  | Post
+  | Person
   | SanityImagePaletteSwatch
   | SanityImagePalette
   | SanityImageDimensions
