@@ -12,6 +12,7 @@ import {
 } from 'sanity/presentation'
 import {assist} from '@sanity/assist'
 import {documentInternationalization} from '@sanity/document-internationalization'
+import {FilteredLanguageMenu} from './src/components/FilteredLanguageMenu'
 
 const projectId = process.env.SANITY_STUDIO_PROJECT_ID || 'your-projectID'
 const dataset = process.env.SANITY_STUDIO_DATASET || 'production'
@@ -134,6 +135,7 @@ function createWorkspace(
         },
         schemaTypes: ['page'],
         languageField: 'locale',
+        hideLanguageFilter: ['page'],
         metadataFields: [defineField({name: 'slug', type: 'slug'})],
         apiVersion: '2024-01-01',
       }),
@@ -148,6 +150,20 @@ function createWorkspace(
       }),
       visionTool(),
     ],
+
+    document: {
+      unstable_languageFilter: (prev, ctx) => {
+        if (ctx.schemaType === 'page' && ctx.documentId) {
+          const documentId = ctx.documentId
+          return [
+            ...prev,
+            (props: {schemaType: import('sanity').ObjectSchemaType}) =>
+              FilteredLanguageMenu({...props, documentId}),
+          ]
+        }
+        return prev
+      },
+    },
 
     schema: {
       types: schemaTypes,

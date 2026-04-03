@@ -68,4 +68,13 @@ export const page = defineType({
       },
     }),
   ],
+  preview: {
+    select: {title: 'title', locale: 'locale'},
+    prepare({title, locale}) {
+      return {
+        title: title || 'Untitled',
+        subtitle: locale || '',
+      }
+    },
+  },
 })

@@ -53,17 +53,53 @@ export function createStructure(regionSlug: string) {
                   return S.list().title('No region found').items([])
                 }
 
+                const allRegionPrefixes = region.countries.flatMap((c) =>
+                  (c.locales || []).map((l) => `${c.slug}_${l.localeId}`),
+                )
+
                 return S.list()
                   .title(region.title)
-                  .items(
-                    region.countries.map((country) =>
-                      S.listItem()
+                  .items([
+                    S.listItem()
+                      .title('All pages')
+                      .child(
+                        S.documentTypeList('page')
+                          .title(`${region.title} — All pages`)
+                          .filter(
+                            `_type == "page" && locale in $locales`,
+                          )
+                          .params({locales: allRegionPrefixes})
+                          .initialValueTemplates([]),
+                      ),
+
+                    S.divider(),
+
+                    ...region.countries.map((country) => {
+                      const countryPrefixes = (country.locales || []).map(
+                        (l) => `${country.slug}_${l.localeId}`,
+                      )
+
+                      return S.listItem()
                         .title(country.title)
                         .child(
                           S.list()
                             .title(country.title)
-                            .items(
-                              (country.locales || []).map((loc) => {
+                            .items([
+                              S.listItem()
+                                .title('All pages')
+                                .child(
+                                  S.documentTypeList('page')
+                                    .title(`${country.title} — All pages`)
+                                    .filter(
+                                      '_type == "page" && locale in $locales',
+                                    )
+                                    .params({locales: countryPrefixes})
+                                    .initialValueTemplates([]),
+                                ),
+
+                              S.divider(),
+
+                              ...(country.locales || []).map((loc) => {
                                 const localeId = `${country.slug}_${loc.localeId}`
                                 return S.listItem()
                                   .title(`${loc.title} (${localeId})`)
@@ -79,10 +115,10 @@ export function createStructure(regionSlug: string) {
                                       ]),
                                   )
                               }),
-                            ),
-                        ),
-                    ),
-                  )
+                            ]),
+                        )
+                    }),
+                  ])
               }),
           ),
 
