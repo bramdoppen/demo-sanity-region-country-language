@@ -94,10 +94,10 @@ export function FilteredLanguageMenu({documentId, schemaType}: FilteredLanguageM
   const sourceLocale =
     typeof source?.[languageField] === 'string' ? (source[languageField] as string) : undefined
 
-  const countryPrefix = sourceLocale ? sourceLocale.split('_')[0] : undefined
+  const countrySuffix = sourceLocale ? sourceLocale.split('-').slice(1).join('-') : undefined
 
-  const filteredLanguages = countryPrefix
-    ? supportedLanguages.filter((lang) => lang.id.startsWith(`${countryPrefix}_`))
+  const filteredLanguages = countrySuffix
+    ? supportedLanguages.filter((lang) => lang.id.endsWith(`-${countrySuffix}`))
     : supportedLanguages
 
   const [metadata, setMetadata] = useState<MetadataDoc | null>(null)
@@ -187,6 +187,18 @@ export function FilteredLanguageMenu({documentId, schemaType}: FilteredLanguageM
         const tx = client.transaction()
         const newDocId = uuid()
 
+        const langParts = language.id.split('-')
+        const targetLocaleId = langParts[0]
+        const targetCountrySlug = langParts.slice(1).join('-')
+
+        const resolved = await client.fetch<{countryDocId: string | null; localeDocId: string | null}>(
+          `{
+            "countryDocId": *[_type == "country" && slug.current == $cs][0]._id,
+            "localeDocId": *[_type == "locale" && localeId == $li][0]._id
+          }`,
+          {cs: targetCountrySlug, li: targetLocaleId},
+        )
+
         let newDoc: Record<string, unknown> = {
           ...source,
           _id: `drafts.${newDocId}`,
@@ -196,6 +208,15 @@ export function FilteredLanguageMenu({documentId, schemaType}: FilteredLanguageM
         delete newDoc._rev
         delete newDoc._updatedAt
         delete newDoc._createdAt
+        delete newDoc.slug
+
+        if (resolved?.countryDocId) {
+          newDoc.country = {_type: 'reference', _ref: resolved.countryDocId}
+        }
+        if (resolved?.localeDocId) {
+          newDoc.locale = {_type: 'reference', _ref: resolved.localeDocId}
+        }
+
         newDoc = removeExcludedFields(newDoc, schemaType)
         tx.create(newDoc as Parameters<typeof tx.create>[0])
 

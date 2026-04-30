@@ -1,12 +1,12 @@
 import {defineField, defineType} from 'sanity'
-import {DocumentIcon} from '@sanity/icons'
+import {StarIcon} from '@sanity/icons'
 import {localeFields} from '../shared/localeFields'
 
-export const page = defineType({
-  name: 'page',
-  title: 'Page',
+export const promotionsPage = defineType({
+  name: 'promotionsPage',
+  title: 'Promotions Page',
   type: 'document',
-  icon: DocumentIcon,
+  icon: StarIcon,
   fields: [
     defineField({
       name: 'title',
@@ -18,7 +18,6 @@ export const page = defineType({
       name: 'slug',
       title: 'Slug',
       type: 'slug',
-      validation: (Rule) => Rule.required(),
       options: {
         source: 'title',
         maxLength: 96,
@@ -30,7 +29,7 @@ export const page = defineType({
           const countryRef = doc?.country?._ref ?? ''
           const localeRef = doc?.locale?._ref ?? ''
           const count = await client.fetch<number>(
-            `count(*[_type == "page" && slug.current == $slug && country->slug.current == $countrySlug && locale->localeId == $localeId && !(_id in [$id, $draftId])])`,
+            `count(*[_type == "promotionsPage" && slug.current == $slug && country->slug.current == $countrySlug && locale->localeId == $localeId && !(_id in [$id, $draftId])])`,
             {
               slug,
               countrySlug: countryRef
@@ -46,6 +45,7 @@ export const page = defineType({
           return count === 0
         },
       },
+      validation: (Rule) => Rule.required(),
     }),
     ...localeFields,
     defineField({
@@ -59,21 +59,14 @@ export const page = defineType({
       type: 'string',
     }),
     defineField({
-      name: 'pageBuilder',
-      title: 'Page builder',
+      name: 'contentModules',
+      title: 'Content Modules',
       type: 'array',
-      of: [{type: 'callToAction'}, {type: 'infoSection'}],
-      options: {
-        insertMenu: {
-          views: [
-            {
-              name: 'grid',
-              previewImageUrl: (schemaTypeName) =>
-                `/static/page-builder-thumbnails/${schemaTypeName}.webp`,
-            },
-          ],
-        },
-      },
+      of: [
+        {type: 'reference', to: [{type: 'bannerArray'}]},
+        {type: 'callToAction'},
+        {type: 'infoSection'},
+      ],
     }),
   ],
   preview: {

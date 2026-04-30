@@ -12,6 +12,7 @@ import {
 } from 'sanity/presentation'
 import {assist} from '@sanity/assist'
 import {documentInternationalization} from '@sanity/document-internationalization'
+import {internationalizedArray} from 'sanity-plugin-internationalized-array'
 import {FilteredLanguageMenu} from './src/components/FilteredLanguageMenu'
 
 const projectId = process.env.SANITY_STUDIO_PROJECT_ID || 'your-projectID'
@@ -128,23 +129,95 @@ function createWorkspace(
 
           return countries.flatMap((country) =>
             (country.locales || []).map((loc) => ({
-              id: `${country.countrySlug}_${loc.localeId}`,
-              title: `${loc.title} (${country.countrySlug}_${loc.localeId})`,
+              id: `${loc.localeId}-${country.countrySlug}`,
+              title: `${loc.title} (${loc.localeId}-${country.countrySlug})`,
             })),
           )
         },
-        schemaTypes: ['page'],
-        languageField: 'locale',
-        hideLanguageFilter: ['page'],
+        schemaTypes: ['page', 'promotionsPage', 'bannerArray'],
+        languageField: 'language',
+        hideLanguageFilter: ['page', 'promotionsPage', 'bannerArray'],
         metadataFields: [defineField({name: 'slug', type: 'slug'})],
         apiVersion: '2024-01-01',
+        callback: async ({client, destinationLanguageId, newDocument}) => {
+          const parts = destinationLanguageId.split('-')
+          const localeId = parts[0]
+          const countrySlug = parts.slice(1).join('-')
+
+          const resolved = await client.fetch<{
+            countryDocId: string | null
+            localeDocId: string | null
+          }>(
+            `{
+              "countryDocId": *[_type == "country" && slug.current == $cs][0]._id,
+              "localeDocId": *[_type == "locale" && localeId == $li][0]._id
+            }`,
+            {cs: countrySlug, li: localeId},
+          )
+
+          const docId = newDocument._id as string
+          const patch: Record<string, unknown> = {slug: undefined}
+
+          if (resolved?.countryDocId) {
+            patch.country = {_type: 'reference', _ref: resolved.countryDocId}
+          }
+          if (resolved?.localeDocId) {
+            patch.locale = {_type: 'reference', _ref: resolved.localeDocId}
+          }
+
+          await client
+            .patch(docId)
+            .set(patch)
+            .unset(['slug'])
+            .commit()
+        },
+      }),
+      internationalizedArray({
+        languages: async (client) => {
+          const countries = await client.fetch<
+            {countrySlug: string; locales: {localeId: string; title: string}[]}[]
+          >(
+            `*[_type == "country"]{
+              "countrySlug": slug.current,
+              "locales": locales[]->{ localeId, title }
+            }`,
+          )
+
+          return countries.flatMap((country) =>
+            (country.locales || []).map((loc) => ({
+              id: `${loc.localeId}-${country.countrySlug}`,
+              title: `${loc.title} (${loc.localeId}-${country.countrySlug})`,
+            })),
+          )
+        },
+        fieldTypes: ['string', 'text'],
       }),
       unsplashImageAsset(),
       assist({
         translate: {
           document: {
-            languageField: 'locale',
-            documentTypes: ['page'],
+            languageField: 'language',
+            documentTypes: ['page', 'promotionsPage', 'bannerArray'],
+          },
+          field: {
+            languages: async (client) => {
+              const countries = await client.fetch<
+                {countrySlug: string; locales: {localeId: string; title: string}[]}[]
+              >(
+                `*[_type == "country"]{
+                  "countrySlug": slug.current,
+                  "locales": locales[]->{ localeId, title }
+                }`,
+              )
+
+              return countries.flatMap((country) =>
+                (country.locales || []).map((loc) => ({
+                  id: `${loc.localeId}-${country.countrySlug}`,
+                  title: `${loc.title} (${loc.localeId}-${country.countrySlug})`,
+                })),
+              )
+            },
+            documentTypes: ['category', 'bannerCard'],
           },
         },
       }),
@@ -153,7 +226,8 @@ function createWorkspace(
 
     document: {
       unstable_languageFilter: (prev, ctx) => {
-        if (ctx.schemaType === 'page' && ctx.documentId) {
+        const localizedTypes = ['page', 'promotionsPage', 'bannerArray']
+        if (localizedTypes.includes(ctx.schemaType) && ctx.documentId) {
           const documentId = ctx.documentId
           return [
             ...prev,
@@ -167,16 +241,32 @@ function createWorkspace(
 
     schema: {
       types: schemaTypes,
-      templates: (prev) => [
-        ...prev.filter((t) => t.id !== 'page'),
-        {
-          id: 'page-by-locale',
-          title: 'Page',
-          schemaType: 'page',
-          parameters: [{name: 'locale', type: 'string'}],
-          value: (params: {locale: string}) => ({locale: params.locale}),
-        },
-      ],
+      templates: (prev) => {
+        const managed = ['page', 'promotionsPage', 'bannerArray']
+        const titles: Record<string, string> = {
+          page: 'Page',
+          promotionsPage: 'Promotions Page',
+          bannerArray: 'Banner Array',
+        }
+        return [
+          ...prev.filter((t) => !managed.includes(t.id)),
+          ...managed.map((type) => ({
+            id: `${type}-by-language`,
+            title: titles[type] || type,
+            schemaType: type,
+            parameters: [
+              {name: 'language', type: 'string'},
+              {name: 'countryId', type: 'string'},
+              {name: 'localeDocId', type: 'string'},
+            ],
+            value: (params: {language: string; countryId: string; localeDocId: string}) => ({
+              language: params.language,
+              country: {_type: 'reference', _ref: params.countryId},
+              locale: {_type: 'reference', _ref: params.localeDocId},
+            }),
+          })),
+        ]
+      },
     },
   }
 }
