@@ -8,6 +8,12 @@ export const locale = defineType({
   icon: TranslateIcon,
   fields: [
     defineField({
+      name: 'emoji',
+      title: 'Icon',
+      type: 'string',
+      description: 'Emoji icon for this locale, e.g. 🇳🇱 🇫🇷 🇬🇧',
+    }),
+    defineField({
       name: 'title',
       title: 'Title',
       type: 'string',
@@ -20,8 +26,15 @@ export const locale = defineType({
       description: 'Locale identifier, e.g. nl, fr, en',
       validation: (Rule) => Rule.required(),
     }),
+    
   ],
   preview: {
-    select: {title: 'title', subtitle: 'localeId'},
+    select: {title: 'title', subtitle: 'localeId', emoji: 'emoji'},
+    prepare({title, subtitle, emoji}) {
+      return {
+        title: emoji ? `${emoji} ${title}` : title,
+        subtitle,
+      }
+    },
   },
 })

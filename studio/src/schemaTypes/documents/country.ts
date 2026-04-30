@@ -8,6 +8,12 @@ export const country = defineType({
   icon: PinIcon,
   fields: [
     defineField({
+      name: 'emoji',
+      title: 'Flag',
+      type: 'string',
+      description: 'Country flag emoji, e.g. 🇳🇱 🇧🇪 🇩🇪',
+    }),
+    defineField({
       name: 'title',
       title: 'Title',
       type: 'string',
@@ -38,6 +44,7 @@ export const country = defineType({
   preview: {
     select: {
       title: 'title',
+      emoji: 'emoji',
       locale0Title: 'locales.0.title',
       locale1Title: 'locales.1.title',
       locale2Title: 'locales.2.title',
@@ -46,7 +53,7 @@ export const country = defineType({
       locale5Title: 'locales.5.title',
     },
     prepare(selection) {
-      const { title } = selection
+      const {title, emoji} = selection
       const locales = [
         selection.locale0Title,
         selection.locale1Title,
@@ -57,7 +64,7 @@ export const country = defineType({
       ].filter(Boolean)
 
       return {
-        title,
+        title: emoji ? `${emoji} ${title}` : title,
         subtitle: `Languages: ${locales.join(' | ')}`,
       }
     },

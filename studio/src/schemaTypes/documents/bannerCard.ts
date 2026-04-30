@@ -46,15 +46,28 @@ export const bannerCard = defineType({
       title: 'cardTitle',
       media: 'image',
     },
-    prepare({title}) {
+    prepare({title, media}) {
+      type LangEntry = {_key: string; value: string; language?: string}
+      const entries = (title as LangEntry[] | undefined) || []
+      const filled = entries.filter((t) => t.value)
+      const total = entries.length
+
       const localizedTitle =
-        title?.find((t: {language: string; value: string}) => t.language.startsWith('nl'))?.value ||
-        title?.[0]?.language.startsWith('nl')?.value ||
+        filled.find((t) => t.language?.startsWith('nl'))?.value ||
+        filled[0]?.value ||
         'Untitled'
 
-      return {
-        title: localizedTitle,
+      const label = filled.length === 1 ? 'vertaling' : 'vertalingen'
+      let subtitle: string
+      if (total === 0) {
+        subtitle = 'Geen vertalingen'
+      } else if (filled.length === total) {
+        subtitle = `✓ ${filled.length} ${label}`
+      } else {
+        subtitle = `✗ ${filled.length}/${total} ${label}`
       }
+
+      return {title: localizedTitle, subtitle, media}
     },
   },
 })

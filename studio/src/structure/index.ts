@@ -1,12 +1,10 @@
 import {
-  CogIcon,
   HomeIcon,
   StarIcon,
   InlineElementIcon,
   BlockElementIcon,
   PinIcon,
   TranslateIcon,
-  DocumentIcon,
   WarningOutlineIcon,
   TagIcon,
 } from '@sanity/icons'
@@ -24,13 +22,8 @@ interface Country {
   _id: string
   title: string
   slug: string
+  emoji?: string
   locales: Locale[]
-}
-
-interface Region {
-  _id: string
-  title: string
-  countries: Country[]
 }
 
 interface Language {
@@ -74,9 +67,9 @@ function createFlatLocalizedList(
   typeName: string,
   typeTitle: string,
   templateId: string,
-  region: Region,
+  countries: Country[],
 ) {
-  const allPrefixes = region.countries.flatMap((c) =>
+  const allPrefixes = countries.flatMap((c) =>
     (c.locales || []).map((l) => `${l.localeId}-${c.slug}`),
   )
 
@@ -85,6 +78,7 @@ function createFlatLocalizedList(
   items.push(
     S.listItem()
       .title('All languages')
+      .icon(() => '🌍' as any)
       .child(
         S.documentTypeList(typeName)
           .title(`${typeTitle} - All languages`)
@@ -96,19 +90,22 @@ function createFlatLocalizedList(
 
   items.push(S.divider().title('By country') as any)
 
-  for (const country of region.countries) {
+  for (const country of countries) {
     const locales = country.locales || []
     const isMultiLang = locales.length > 1
 
     for (const loc of locales) {
       const language = `${loc.localeId}-${country.slug}`
-      const title = isMultiLang
+      const label = isMultiLang
         ? `${country.title} (${loc.localeId})`
         : country.title
+      const flag = country.emoji
+      const listItem = S.listItem()
+        .id(`${typeName}-${language}`)
+        .title(label)
+        .icon(flag ? () => flag as any : undefined as any)
       items.push(
-        S.listItem()
-          .id(`${typeName}-${language}`)
-          .title(title)
+        listItem
           .child(
             S.documentTypeList(typeName)
               .title(`${country.title} — ${loc.title}`)
@@ -129,44 +126,39 @@ function createFlatLocalizedList(
   return S.list().title(typeTitle).items(items)
 }
 
-function fetchRegion(client: ReturnType<StructureResolverContext['getClient']>, regionSlug: string) {
-  return client.fetch<Region | null>(
-    `*[_type == "region" && slug.current == $regionSlug][0]{
+function fetchCountries(client: ReturnType<StructureResolverContext['getClient']>) {
+  return client.fetch<Country[]>(
+    `*[_type == "country"] | order(title asc) {
       _id,
       title,
-      "countries": *[_type == "country" && region._ref == ^._id] | order(title asc) {
-        _id,
-        title,
-        "slug": slug.current,
-        "locales": locales[]->{ _id, localeId, title }
-      }
+      emoji,
+      "slug": slug.current,
+      "locales": locales[]->{ _id, localeId, title }
     }`,
-    {regionSlug},
   )
 }
 
-export function createStructure(regionSlug: string) {
-  return (S: StructureBuilder, context: StructureResolverContext) => {
-    const client = context.getClient({apiVersion: API_VERSION})
+export function createStructure(S: StructureBuilder, context: StructureResolverContext) {
+  const client = context.getClient({apiVersion: API_VERSION})
 
-    const localizedSection = (
-      title: string,
-      icon: typeof HomeIcon,
-      typeName: string,
-      typeTitle: string,
-      templateId: string,
-    ) =>
-      S.listItem()
-        .title(title)
-        .icon(icon)
-        .child(() =>
-          fetchRegion(client, regionSlug).then((region) => {
-            if (!region) {
-              return S.list().title('No region found').items([])
-            }
-            return createFlatLocalizedList(S, typeName, typeTitle, templateId, region)
-          }),
-        )
+  const localizedSection = (
+    title: string,
+    icon: typeof HomeIcon,
+    typeName: string,
+    typeTitle: string,
+    templateId: string,
+  ) =>
+    S.listItem()
+      .title(title)
+      .icon(icon)
+      .child(() =>
+        fetchCountries(client).then((countries) => {
+          if (!countries.length) {
+            return S.list().title('No countries found').items([])
+          }
+          return createFlatLocalizedList(S, typeName, typeTitle, templateId, countries)
+        }),
+      )
 
     const bannerCardsSection = () =>
       S.listItem()
@@ -196,6 +188,7 @@ export function createStructure(regionSlug: string) {
                       .items(
                         categories.map((cat) =>
                           S.listItem()
+                            .id(cat._id)
                             .title(getCategoryTitle(cat.title))
                             .child(
                               S.documentTypeList('bannerCard')
@@ -221,7 +214,7 @@ export function createStructure(regionSlug: string) {
                             S.documentTypeList('bannerCard')
                               .title('All Missing Translations')
                               .filter(
-                                '_type == "bannerCard" && count(cardTitle) < $totalLanguages',
+                                '_type == "bannerCard" && (count(cardTitle[defined(value)]) < $totalLanguages || count(cardSubtitle[defined(value)]) < $totalLanguages)',
                               )
                               .params({totalLanguages: languages.length})
                               .initialValueTemplates([]),
@@ -234,7 +227,7 @@ export function createStructure(regionSlug: string) {
                               S.documentTypeList('bannerCard')
                                 .title(`Missing ${lang.title}`)
                                 .filter(
-                                  '_type == "bannerCard" && !($language in cardTitle[]._key)',
+                                  '_type == "bannerCard" && (!($language in cardTitle[].language) || !($language in cardSubtitle[].language))',
                                 )
                                 .params({language: lang.id})
                                 .initialValueTemplates([]),
@@ -287,6 +280,66 @@ export function createStructure(regionSlug: string) {
           ),
         )
 
+    interface CategoryResult {
+      _id: string
+      title: {_key: string; value: string}[]
+      parentId: string | null
+    }
+
+    const categoriesSection = () =>
+      S.listItem()
+        .title('Categories')
+        .icon(TagIcon)
+        .child(() =>
+          client
+            .fetch<CategoryResult[]>(
+              `*[_type == "category"] | order(title[0].value asc) {
+                _id,
+                title,
+                "parentId": parent._ref
+              }`,
+            )
+            .then((categories) => {
+              const topLevel = categories.filter((c) => !c.parentId)
+              const childrenOf = (parentId: string) =>
+                categories.filter((c) => c.parentId === parentId)
+
+              const buildCategoryItem = (cat: CategoryResult): ReturnType<StructureBuilder['listItem']> => {
+                const children = childrenOf(cat._id)
+                const catTitle = getCategoryTitle(cat.title)
+                const item = S.listItem().id(cat._id).title(catTitle).icon(TagIcon)
+
+                if (children.length > 0) {
+                  return item.child(
+                    S.list()
+                      .title(catTitle)
+                      .items([
+                        S.listItem()
+                          .id(`${cat._id}-doc`)
+                          .title(`Edit ${catTitle}`)
+                          .child(S.document().schemaType('category').documentId(cat._id)),
+                        S.divider() as any,
+                        ...children.map(buildCategoryItem),
+                      ]),
+                  )
+                }
+
+                return item.child(S.document().schemaType('category').documentId(cat._id))
+              }
+
+              return S.list()
+                .title('Categories')
+                .items([
+                  S.listItem()
+                    .title('All Categories')
+                    .icon(() => '📋' as any)
+                    .child(S.documentTypeList('category').title('All Categories')),
+                  S.divider().title('By parent') as any,
+                  ...topLevel.map(buildCategoryItem),
+                ])
+            }),
+        )
+
     return S.list()
       .title('Content')
       .items([
@@ -300,16 +353,6 @@ export function createStructure(regionSlug: string) {
         ),
         pagesMissingTranslations(),
 
-        S.divider().title('Inspiration') as any,
-
-        localizedSection(
-          'Inspiration Landing Pages',
-          DocumentIcon,
-          'page',
-          'Inspiration Landing Pages',
-          'page-by-language',
-        ),
-
         S.divider().title('Banners') as any,
 
         localizedSection(
@@ -322,6 +365,10 @@ export function createStructure(regionSlug: string) {
 
         bannerCardsSection(),
 
+        S.divider().title('Categories') as any,
+
+        categoriesSection(),
+
         S.divider().title('Configuration') as any,
 
         S.listItem()
@@ -333,11 +380,5 @@ export function createStructure(regionSlug: string) {
           .title('Locale')
           .icon(TranslateIcon)
           .child(S.documentTypeList('locale').title('Locales')),
-
-        S.listItem()
-          .title('Site Settings')
-          .icon(CogIcon)
-          .child(S.document().schemaType('settings').documentId('siteSettings')),
       ])
-  }
 }

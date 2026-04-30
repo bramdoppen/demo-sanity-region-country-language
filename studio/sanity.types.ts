@@ -38,23 +38,6 @@ export type Link = {
   openInNewTab?: boolean
 }
 
-export type BannerCardReference = {
-  _ref: string
-  _type: 'reference'
-  _weak?: boolean
-  [internalGroqTypeReferenceTo]?: 'bannerCard'
-}
-
-export type BannerArray = {
-  _type: 'bannerArray'
-  title?: string
-  items?: Array<
-    {
-      _key: string
-    } & BannerCardReference
-  >
-}
-
 export type SanityImageAssetReference = {
   _ref: string
   _type: 'reference'
@@ -157,8 +140,8 @@ export type BannerCard = {
   _createdAt: string
   _updatedAt: string
   _rev: string
-  cardTitle: string
-  cardSubtitle?: string
+  cardTitle: InternationalizedArrayString
+  cardSubtitle?: InternationalizedArrayString
   link?: Link
   image?: {
     asset?: SanityImageAssetReference
@@ -168,8 +151,14 @@ export type BannerCard = {
     _type: 'image'
   }
   category?: CategoryReference
-  componentDescription?: string
+  componentDescription?: InternationalizedArrayText
 }
+
+export type InternationalizedArrayText = Array<
+  {
+    _key: string
+  } & InternationalizedArrayTextValue
+>
 
 export type SanityImageCrop = {
   _type: 'sanity.imageCrop'
@@ -187,6 +176,12 @@ export type SanityImageHotspot = {
   width: number
 }
 
+export type InternationalizedArrayString = Array<
+  {
+    _key: string
+  } & InternationalizedArrayStringValue
+>
+
 export type Category = {
   _id: string
   _type: 'category'
@@ -199,72 +194,10 @@ export type Category = {
   parent?: CategoryReference
 }
 
-export type InternationalizedArrayText = Array<
-  {
-    _key: string
-  } & InternationalizedArrayTextValue
->
-
 export type Slug = {
   _type: 'slug'
   current: string
   source?: string
-}
-
-export type InternationalizedArrayString = Array<
-  {
-    _key: string
-  } & InternationalizedArrayStringValue
->
-
-export type Locale = {
-  _id: string
-  _type: 'locale'
-  _createdAt: string
-  _updatedAt: string
-  _rev: string
-  title: string
-  localeId: string
-}
-
-export type RegionReference = {
-  _ref: string
-  _type: 'reference'
-  _weak?: boolean
-  [internalGroqTypeReferenceTo]?: 'region'
-}
-
-export type LocaleReference = {
-  _ref: string
-  _type: 'reference'
-  _weak?: boolean
-  [internalGroqTypeReferenceTo]?: 'locale'
-}
-
-export type Country = {
-  _id: string
-  _type: 'country'
-  _createdAt: string
-  _updatedAt: string
-  _rev: string
-  title: string
-  slug: Slug
-  region: RegionReference
-  locales: Array<
-    {
-      _key: string
-    } & LocaleReference
-  >
-}
-
-export type Region = {
-  _id: string
-  _type: 'region'
-  _createdAt: string
-  _updatedAt: string
-  _rev: string
-  title: string
-  slug: Slug
 }
 
 export type Settings = {
@@ -473,10 +406,88 @@ export type InternationalizedArrayReference = Array<
   } & InternationalizedArrayReferenceValue
 >
 
+export type PromotionsPageReference = {
+  _ref: string
+  _type: 'reference'
+  _weak?: boolean
+  [internalGroqTypeReferenceTo]?: 'promotionsPage'
+}
+
+export type BannerArrayReference = {
+  _ref: string
+  _type: 'reference'
+  _weak?: boolean
+  [internalGroqTypeReferenceTo]?: 'bannerArray'
+}
+
 export type InternationalizedArrayReferenceValue = {
   _type: 'internationalizedArrayReferenceValue'
-  value?: PageReference
+  value?: PageReference | PromotionsPageReference | BannerArrayReference
   language: string
+}
+
+export type CountryReference = {
+  _ref: string
+  _type: 'reference'
+  _weak?: boolean
+  [internalGroqTypeReferenceTo]?: 'country'
+}
+
+export type LocaleReference = {
+  _ref: string
+  _type: 'reference'
+  _weak?: boolean
+  [internalGroqTypeReferenceTo]?: 'locale'
+}
+
+export type BannerCardReference = {
+  _ref: string
+  _type: 'reference'
+  _weak?: boolean
+  [internalGroqTypeReferenceTo]?: 'bannerCard'
+}
+
+export type BannerArray = {
+  _id: string
+  _type: 'bannerArray'
+  _createdAt: string
+  _updatedAt: string
+  _rev: string
+  title: string
+  country?: CountryReference
+  locale?: LocaleReference
+  language?: string
+  items?: Array<
+    {
+      _key: string
+    } & BannerCardReference
+  >
+}
+
+export type PromotionsPage = {
+  _id: string
+  _type: 'promotionsPage'
+  _createdAt: string
+  _updatedAt: string
+  _rev: string
+  title: string
+  slug: Slug
+  country?: CountryReference
+  locale?: LocaleReference
+  language?: string
+  heading?: string
+  subheading?: string
+  contentModules?: Array<
+    | ({
+        _key: string
+      } & BannerArrayReference)
+    | ({
+        _key: string
+      } & CallToAction)
+    | ({
+        _key: string
+      } & InfoSection)
+  >
 }
 
 export type Page = {
@@ -487,7 +498,9 @@ export type Page = {
   _rev: string
   title: string
   slug: Slug
-  locale?: string
+  country?: CountryReference
+  locale?: LocaleReference
+  language?: string
   heading?: string
   subheading?: string
   pageBuilder?: Array<
@@ -545,6 +558,49 @@ export type Person = {
     alt?: string
     _type: 'image'
   }
+}
+
+export type Locale = {
+  _id: string
+  _type: 'locale'
+  _createdAt: string
+  _updatedAt: string
+  _rev: string
+  title: string
+  localeId: string
+}
+
+export type RegionReference = {
+  _ref: string
+  _type: 'reference'
+  _weak?: boolean
+  [internalGroqTypeReferenceTo]?: 'region'
+}
+
+export type Country = {
+  _id: string
+  _type: 'country'
+  _createdAt: string
+  _updatedAt: string
+  _rev: string
+  title: string
+  slug: Slug
+  region: RegionReference
+  locales: Array<
+    {
+      _key: string
+    } & LocaleReference
+  >
+}
+
+export type Region = {
+  _id: string
+  _type: 'region'
+  _createdAt: string
+  _updatedAt: string
+  _rev: string
+  title: string
+  slug: Slug
 }
 
 export type SanityImagePaletteSwatch = {
@@ -648,8 +704,6 @@ export type AllSanitySchemaTypes =
   | PageReference
   | PostReference
   | Link
-  | BannerCardReference
-  | BannerArray
   | SanityImageAssetReference
   | CallToAction
   | InfoSection
@@ -658,17 +712,12 @@ export type AllSanitySchemaTypes =
   | Button
   | CategoryReference
   | BannerCard
+  | InternationalizedArrayText
   | SanityImageCrop
   | SanityImageHotspot
-  | Category
-  | InternationalizedArrayText
-  | Slug
   | InternationalizedArrayString
-  | Locale
-  | RegionReference
-  | LocaleReference
-  | Country
-  | Region
+  | Category
+  | Slug
   | Settings
   | SanityAssistInstructionTask
   | SanityAssistTaskStatus
@@ -687,11 +736,22 @@ export type AllSanitySchemaTypes =
   | InternationalizedArrayStringValue
   | TranslationMetadata
   | InternationalizedArrayReference
+  | PromotionsPageReference
+  | BannerArrayReference
   | InternationalizedArrayReferenceValue
+  | CountryReference
+  | LocaleReference
+  | BannerCardReference
+  | BannerArray
+  | PromotionsPage
   | Page
   | PersonReference
   | Post
   | Person
+  | Locale
+  | RegionReference
+  | Country
+  | Region
   | SanityImagePaletteSwatch
   | SanityImagePalette
   | SanityImageDimensions
