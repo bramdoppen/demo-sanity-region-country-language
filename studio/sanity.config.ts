@@ -8,6 +8,7 @@ import {assist} from '@sanity/assist'
 import {documentInternationalization} from '@sanity/document-internationalization'
 import {internationalizedArray} from 'sanity-plugin-internationalized-array'
 import {FilteredLanguageMenu} from './src/components/FilteredLanguageMenu'
+import {StudioLayout, queueToast} from './src/components/ToastBridge'
 
 const projectId = process.env.SANITY_STUDIO_PROJECT_ID || '69zhjgro'
 const dataset = process.env.SANITY_STUDIO_DATASET || 'production'
@@ -70,11 +71,66 @@ export default defineConfig({
             patch.locale = {_type: 'reference', _ref: resolved.localeDocId}
           }
 
+          const arrayField =
+            newDocument._type === 'page' ? 'pageBuilder' : 'contentModules'
+          const modules = (newDocument as Record<string, unknown>)[arrayField] as
+            | {_type: string; _ref?: string; _key: string}[]
+            | undefined
+
+          const bannerRefs = (modules || []).filter(
+            (m) => m._type === 'reference' && m._ref,
+          )
+
+          const missingTitles: string[] = []
+
+          if (bannerRefs.length > 0) {
+            const refMap = new Map<string, string>()
+
+            for (const ref of bannerRefs) {
+              const sourceRef = ref._ref!
+              const result = await client.fetch<{
+                translatedId: string | null
+                sourceTitle: string | null
+              } | null>(
+                `*[_type == "translation.metadata"
+                  && $sourceRef in translations[].value._ref
+                ][0]{
+                  "translatedId": translations[language == $lang][0].value._ref,
+                  "sourceTitle": *[_id == $sourceRef][0].title
+                }`,
+                {sourceRef, lang: destinationLanguageId},
+              )
+
+              if (result?.translatedId) {
+                refMap.set(sourceRef, result.translatedId)
+              } else {
+                missingTitles.push(result?.sourceTitle || sourceRef)
+              }
+            }
+
+            const updatedModules = (modules || []).map((m) => {
+              if (m._type === 'reference' && m._ref && refMap.has(m._ref)) {
+                return {...m, _ref: refMap.get(m._ref)!}
+              }
+              return m
+            })
+
+            patch[arrayField] = updatedModules
+          }
+
           await client
             .patch(docId)
             .set(patch)
             .unset(['slug'])
             .commit()
+
+          if (missingTitles.length > 0) {
+            queueToast({
+              title: 'Banner Array vertalingen niet gevonden',
+              description: `Geen ${destinationLanguageId} vertaling gevonden voor: ${missingTitles.join(', ')}`,
+              status: 'warning',
+            })
+          }
         },
       }),
       internationalizedArray({
@@ -128,6 +184,12 @@ export default defineConfig({
       }),
       visionTool(),
     ],
+
+    studio: {
+      components: {
+        layout: StudioLayout,
+      },
+    },
 
     schema: {
       types: schemaTypes,
