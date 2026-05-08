@@ -506,6 +506,9 @@ export type Page = {
   pageBuilder?: Array<
     | ({
         _key: string
+      } & BannerArrayReference)
+    | ({
+        _key: string
       } & CallToAction)
     | ({
         _key: string
@@ -566,6 +569,7 @@ export type Locale = {
   _createdAt: string
   _updatedAt: string
   _rev: string
+  emoji?: string
   title: string
   localeId: string
 }
@@ -583,6 +587,7 @@ export type Country = {
   _createdAt: string
   _updatedAt: string
   _rev: string
+  emoji?: string
   title: string
   slug: Slug
   region: RegionReference

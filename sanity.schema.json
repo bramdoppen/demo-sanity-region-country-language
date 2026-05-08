@@ -2913,6 +2913,21 @@
                 },
                 "rest": {
                   "type": "inline",
+                  "name": "bannerArray.reference"
+                }
+              },
+              {
+                "type": "object",
+                "attributes": {
+                  "_key": {
+                    "type": "objectAttribute",
+                    "value": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "rest": {
+                  "type": "inline",
                   "name": "callToAction"
                 }
               },
@@ -3244,6 +3259,13 @@
           "type": "string"
         }
       },
+      "emoji": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string"
+        },
+        "optional": true
+      },
       "title": {
         "type": "objectAttribute",
         "value": {
@@ -3324,6 +3346,13 @@
         "value": {
           "type": "string"
         }
+      },
+      "emoji": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string"
+        },
+        "optional": true
       },
       "title": {
         "type": "objectAttribute",
