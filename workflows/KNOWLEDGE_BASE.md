@@ -44,7 +44,7 @@ https://api.sanity.io/v1/context/organizations/objVdfY4N/mcp/paxon-help
 
 A project token does **not** work here; it fails with `403 contextGrantRequired`.
 
-[Manage](https://www.sanity.io/manage/org/objVdfY4N/api/tokens) → organization → **API** → **Tokens** → **Add token**, with role **Context Viewer**.
+[Manage](https://www.sanity.io/manage/org/objVdfY4N/api/tokens) → organization → **API** → **Tokens** → **Add token**, with role **Context Editor** (Viewer is enough for the Knowledge Base, but the help chat also saves conversations to Insights).
 
 Paste it into `workflows/.env`, which is git-ignored and never shown in the app:
 
@@ -52,7 +52,7 @@ Paste it into `workflows/.env`, which is git-ignored and never shown in the app:
 SANITY_CONTEXT_TOKEN="sk…"
 ```
 
-The help chat uses the same token for the Knowledge Base and for saving conversations to Insights. Put it in `frontend/.env.local` as `SANITY_ORGANIZATION_TOKEN` too. Saving and classifying conversations are writes: if `npm run insights` or the chat fails with a 403, give the token a Context role that can write, not just view.
+The help chat uses the same token for the Knowledge Base and for saving conversations to Insights. Put it in `frontend/.env.local` as `SANITY_ORGANIZATION_TOKEN` too. Saving and classifying conversations need **Context Editor** or higher, so give this token the Context Editor role (it can still read the Knowledge Base).
 
 ## 5. Test it
 

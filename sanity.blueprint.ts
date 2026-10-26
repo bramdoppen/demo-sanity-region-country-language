@@ -8,7 +8,7 @@ export default defineBlueprint({
       memberships: [{resourceType: 'project', resourceId: 'jitb27qd', roleNames: ['editor']}],
     }),
     // Classifies help-chat conversations and turns content gaps into customer questions.
-    // SANITY_ORGANIZATION_TOKEN and OPENROUTER_API_KEY are added with `sanity functions env add`.
+    // SANITY_ORGANIZATION_TOKEN (Context Editor) is added with `sanity functions env add`.
     defineScheduledFunction({
       name: 'classify-conversations',
       event: {expression: '0 * * * *'},

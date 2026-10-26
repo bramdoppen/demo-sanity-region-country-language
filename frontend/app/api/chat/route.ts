@@ -1,10 +1,13 @@
-import {createMCPClient} from '@ai-sdk/mcp'
-import {createOpenRouter} from '@openrouter/ai-sdk-provider'
 import {createClient} from '@sanity/client'
-import {sanityInsightsIntegration} from '@sanity/context/ai-sdk'
-import {convertToModelMessages, isStepCount, streamText, type UIMessage} from 'ai'
+import {createUIMessageStream, createUIMessageStreamResponse, type UIMessage} from 'ai'
+
+import {dataset, projectId} from '@/sanity/lib/api'
+import {token as readToken} from '@/sanity/lib/token'
+
+import {lookUp} from './knowledgeBase'
 
 const MCP_ENDPOINT = 'paxon-help'
+const MAX_RECORDED_RESULT = 4000
 
 type ChatRequest = {
   id: string
@@ -13,60 +16,113 @@ type ChatRequest = {
   language?: string
 }
 
+type RecordedMessage = {
+  role: 'user' | 'assistant' | 'tool'
+  content: string | null
+  toolName?: string | null
+  toolType?: 'call' | 'result' | null
+  error?: string | null
+}
+
 function required(name: string) {
   const value = process.env[name]
   if (!value) throw new Error(`Missing ${name} in frontend/.env.local`)
   return value
 }
 
+const plainText = (message: UIMessage) =>
+  message.parts.map((part) => (part.type === 'text' ? part.text : '')).join('')
+
 export async function POST(request: Request) {
   const {id, messages, market = 'BE', language = 'en'}: ChatRequest = await request.json()
+  const question = plainText(messages[messages.length - 1])
 
-  const token = required('SANITY_ORGANIZATION_TOKEN')
-  const mcpUrl = required('SANITY_CONTEXT_MCP_URL')
-  const authorization = {Authorization: `Bearer ${token}`}
-
-  // Org-scoped: conversations are saved to the organization's Context store.
-  const insightsClient = createClient({
+  const orgToken = required('SANITY_ORGANIZATION_TOKEN')
+  const insights = createClient({
     apiVersion: '2026-08-25',
-    token,
+    token: orgToken,
     context: {organizationId: required('SANITY_ORGANIZATION_ID')},
     useCdn: false,
     useProjectHostname: false,
   })
+  // Agent Actions run against the project; prompt only needs read access.
+  const agent = createClient({
+    projectId,
+    dataset,
+    apiVersion: 'vX',
+    token: readToken,
+    useCdn: false,
+  })
 
-  const initialContextUrl = new URL(mcpUrl)
-  initialContextUrl.pathname = `${initialContextUrl.pathname.replace(/\/$/, '')}/initial-context`
+  const stream = createUIMessageStream({
+    execute: async ({writer}) => {
+      const turn: RecordedMessage[] = [{role: 'user', content: question}]
+      let answer = ''
+      let failure: string | undefined
 
-  const [initialContext, mcp] = await Promise.all([
-    fetch(initialContextUrl, {headers: authorization}).then((r) => (r.ok ? r.text() : '')),
-    createMCPClient({transport: {type: 'http', url: mcpUrl, headers: authorization}}),
-  ])
-  const tools = await mcp.tools()
-  delete tools.initial_context
+      try {
+        const {entries, steps} = await lookUp(question, {
+          mcpUrl: required('SANITY_CONTEXT_MCP_URL'),
+          token: orgToken,
+          agent,
+        })
+        for (const step of steps) {
+          turn.push({role: 'tool', toolName: step.toolName, toolType: 'call', content: step.call})
+          turn.push({
+            role: 'tool',
+            toolName: step.toolName,
+            toolType: 'result',
+            content: step.result.slice(0, MAX_RECORDED_RESULT),
+          })
+        }
 
-  const openrouter = createOpenRouter({apiKey: required('OPENROUTER_API_KEY')})
+        const history = messages
+          .slice(0, -1)
+          .map((m) => `${m.role === 'user' ? 'Customer' : 'Assistant'}: ${plainText(m)}`)
+          .join('\n')
+        answer = (await agent.agent.action.prompt({
+          instruction: `You are the Paxon help assistant. Paxon is a fulfillment and logistics company.
+The customer is in market $market and writes in language "$language". Answer in that language.
+Answer only from the Knowledge Base entries below, in two or three friendly sentences. Plain text, no markdown.
+If the entries don't answer the question, or two entries disagree, say so plainly and offer to pass the question to the contact centre. Never guess.
+Earlier in this conversation: $history
+Customer question: $question
+Knowledge Base entries: $entries`,
+          instructionParams: {
+            market,
+            language,
+            history: history || '(nothing yet)',
+            question,
+            entries: entries || '(no entries found)',
+          },
+        })) as string
+      } catch (error) {
+        failure = error instanceof Error ? error.message : String(error)
+        answer =
+          "Sorry, I can't look that up right now. I'll pass your question to our contact centre."
+      }
 
-  const result = streamText({
-    model: openrouter(process.env.OPENROUTER_CHAT_MODEL || 'anthropic/claude-sonnet-5.5'),
-    system: [
-      'You are the Paxon help assistant. Paxon is a fulfillment and logistics company.',
-      `The customer is in market ${market} and writes in "${language}". Answer in their language.`,
-      'Answer only from the Knowledge Base: search it, read the entries you need, then answer in two or three sentences.',
-      'If the Knowledge Base does not cover the question, or two sources disagree, say so plainly and offer to pass the question to the contact centre. Never guess.',
-      '',
-      '# Knowledge Base reference',
-      initialContext,
-    ].join('\n'),
-    messages: await convertToModelMessages(messages),
-    tools,
-    stopWhen: isStepCount(6),
-    telemetry: {
-      isEnabled: true,
-      integrations: [
-        sanityInsightsIntegration({
-          client: insightsClient,
+      writer.write({type: 'text-start', id: 'answer'})
+      writer.write({type: 'text-delta', id: 'answer', delta: answer})
+      writer.write({type: 'text-end', id: 'answer'})
+      turn.push({role: 'assistant', content: answer, error: failure ?? null})
+
+      // Saves replace the transcript, so append this turn to what's already recorded.
+      try {
+        const recorded = await insights.context.conversations.get({threadId: id})
+        await insights.context.conversations.save({
           threadId: id,
+          messages: [...(recorded?.messages ?? []), ...turn].map(
+            ({role, content, toolName, toolType, error}) => ({
+              role,
+              content,
+              toolName,
+              toolType,
+              error,
+            }),
+          ),
+          modelProvider: 'sanity',
+          modelId: 'agent-actions',
           metadata: {
             mcpEndpoints: [MCP_ENDPOINT],
             app: 'paxon-help-chat',
@@ -74,12 +130,12 @@ export async function POST(request: Request) {
             market,
             language,
           },
-        }),
-      ],
+        })
+      } catch (error) {
+        console.error('Could not save the conversation to Insights:', error)
+      }
     },
-    onEnd: () => mcp.close(),
-    onError: () => mcp.close(),
   })
 
-  return result.toUIMessageStreamResponse()
+  return createUIMessageStreamResponse({stream})
 }
