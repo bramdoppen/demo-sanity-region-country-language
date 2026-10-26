@@ -13,12 +13,6 @@ export const ORGANIZATION_ID = process.env.SANITY_ORGANIZATION_ID ?? 'objVdfY4N'
 export const PARTITION = 'demo'
 export const SCHEMA_ID = '_.schemas.default'
 
-export const REVIEWERS: Record<string, string> = {
-  nl: process.env.REVIEWER_NL ?? '',
-  fr: process.env.REVIEWER_FR ?? '',
-  de: process.env.REVIEWER_DE ?? '',
-}
-
 /** Editor client for the content dataset (Agent Actions, seeding, publishing). */
 export const content = createClient({
   projectId: PROJECT_ID,

@@ -10,9 +10,11 @@
   ],
   "scripts": {
     "dev": "npx run-p --print-label dev:*",
+    "apps": "npx run-p --print-label dev:next dev:studio dev:desk",
     "dev:next": "npm run dev --workspace=frontend",
     "dev:studio": "npm run dev --workspace=studio",
     "dev:desk": "npm run dev --workspace=question-desk",
+    "dev:drain": "npm run drain --workspace=workflows",
     "format": "prettier --cache --write .",
     "import-sample-data": "cd studio && sanity dataset import sample-data.tar.gz --dataset production --replace",
     "lint": "npm run lint --workspace=frontend",

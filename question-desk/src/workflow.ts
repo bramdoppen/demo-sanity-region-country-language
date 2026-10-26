@@ -31,15 +31,40 @@ export function useEngine() {
 
 export type Engine = ReturnType<typeof useEngine>
 
-/** A customer question "lands" and gets checked against the Knowledge Base. */
-export async function checkQuestion(engine: Engine, questionId: string) {
+/**
+ * A customer question "lands" and gets checked against the Knowledge Base.
+ * Clicking twice does not start a second run for the same question.
+ */
+export function useCheckQuestion() {
+  const engine = useEngine()
+  const workflowClient = useClient({apiVersion: ENGINE_API_VERSION, dataset: WORKFLOW_DATASET})
+  const contentClient = useClient({apiVersion: '2025-09-25'})
+
+  return async (questionId: string) => {
+    const running = await workflowClient.fetch<string | null>(
+      `*[_type == "sanity.workflow.instance" && tag == $partition && definition == "question-to-faq"
+        && !defined(completedAt) && !defined(abortedAt)
+        && fields[name == "subject"][0].value.id == $subject][0]._id`,
+      {partition: PARTITION, subject: `dataset:${PROJECT_ID}:${DATASET}:${questionId}`},
+    )
+    if (!running) await startCheck(engine, questionId)
+    await contentClient.patch(questionId).set({status: 'checking'}).commit()
+  }
+}
+
+async function startCheck(engine: Engine, questionId: string) {
   const started = await engine.startInstance({
     definition: 'question-to-faq',
     initialFields: [
       {
         type: 'subject',
         name: 'subject',
-        value: refDataset({projectId: PROJECT_ID, dataset: DATASET, documentId: questionId, type: 'customerQuestion'}),
+        value: refDataset({
+          projectId: PROJECT_ID,
+          dataset: DATASET,
+          documentId: questionId,
+          type: 'customerQuestion',
+        }),
       },
     ],
   })

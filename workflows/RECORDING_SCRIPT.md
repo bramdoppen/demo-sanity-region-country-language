@@ -5,10 +5,10 @@ Story: **every customer question makes the help content better.** About 6 minute
 ## Before you hit record
 
 1. `npm run reset` – clears all workflow instances and demo documents, restores the seed.
-2. `npm run dev` – Studio on 3333, Question Desk on 3334.
-3. In a second terminal: `npm run drain -- --step` (press Enter to advance each automatic step, so you control the pace). Use `npm run drain` for hands-off.
+2. `npm run dev` – frontend on 3000, Studio on 3333, Question Desk on 3334, and the drainer (runs the automatic steps, about 10 seconds each). Stop any other dev servers or drainers first.
+3. Want to control the pace? Use `npm run apps` (same, without the drainer) and run `npm run drain -- --step` in a second terminal (press Enter to advance each automatic step).
 4. Open the Question Desk from the Sanity dashboard (`sanity.io/@objVdfY4N` → Question Desk, or the URL printed by `npm run dev:desk`).
-5. Log in as the FR/DE reviewer (the user IDs in `REVIEWER_FR` / `REVIEWER_DE`), so "For me" fills up.
+5. Log in as the FR/DE reviewer (set under **Reviewers** on the French and German locale documents in the Studio), so "For me" fills up.
 6. Close the terminal that has `.env` open. Nothing with a token should be on screen.
 
 ## 0. A customer asks the help chat (1 min) – optional, needs the Insights keys

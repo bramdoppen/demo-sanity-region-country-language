@@ -1,5 +1,6 @@
 import {defineField, defineType} from 'sanity'
 import {TranslateIcon} from '@sanity/icons/Translate'
+import {UserSelectInput} from '../../components/UserSelectInput'
 
 export const locale = defineType({
   name: 'locale',
@@ -26,7 +27,14 @@ export const locale = defineType({
       description: 'Locale identifier, e.g. nl, fr, en',
       validation: (Rule) => Rule.required(),
     }),
-    
+    defineField({
+      name: 'reviewers',
+      title: 'Reviewers',
+      description: 'People who review translations into this language in the Question Desk.',
+      type: 'array',
+      of: [{type: 'string', components: {input: UserSelectInput}}],
+      validation: (Rule) => Rule.unique(),
+    }),
   ],
   preview: {
     select: {title: 'title', subtitle: 'localeId', emoji: 'emoji'},

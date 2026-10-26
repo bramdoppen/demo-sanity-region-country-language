@@ -15,8 +15,9 @@ export default defineCliConfig({
     projectId,
     dataset,
   },
-  studioHost: process.env.SANITY_STUDIO_STUDIO_HOST || '',
+  studioHost: process.env.SANITY_STUDIO_STUDIO_HOST || 'paxon-question-desk-demo',
   deployment: {
+    appId: 'otif1zqb43u2ydea3soge033',
     autoUpdates: true,
   },
   schemaExtraction: {},

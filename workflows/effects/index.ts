@@ -3,7 +3,7 @@
  * local drainer (scripts/drain.ts) runs them through these handlers.
  */
 import {extractDocumentId, refDataset, type EffectHandler} from '@sanity/workflow-engine'
-import {content, DATASET, PROJECT_ID, promptJson, REVIEWERS} from '../lib/env.ts'
+import {content, DATASET, PROJECT_ID, promptJson} from '../lib/env.ts'
 import {askKnowledgeBase} from '../lib/kb.ts'
 import {publishDocument} from '../lib/publish.ts'
 import {TARGET_LANGUAGES} from '../../studio/src/translation/languages.ts'
@@ -62,6 +62,21 @@ const workflowField = (field: string, value: unknown) => ({
   value: {type: 'literal' as const, value},
 })
 
+/** Workflow assignees need the account-global user id; project member ids start with "p". */
+async function globalUserIds(ids: string[]): Promise<string[]> {
+  const api = content.withConfig({useProjectHostname: false})
+  const resolved = await Promise.all(
+    ids.map(async (id) => {
+      if (!id.startsWith('p')) return id
+      const user = await api
+        .request<{sanityUserId?: string}>({url: `/projects/${PROJECT_ID}/users/${id}`})
+        .catch(() => undefined)
+      return user?.sanityUserId
+    }),
+  )
+  return resolved.filter((id): id is string => Boolean(id))
+}
+
 /* ---------- Workflow 1: translate and review, per language ---------- */
 
 const translateFaqEffect: EffectHandler = async (params) => {
@@ -76,9 +91,20 @@ const translateFaqEffect: EffectHandler = async (params) => {
   const written = await translateFaq(content, {sourceId, language, styleGuideOverride: offBrand})
 
   const needsReview = Boolean(context.guideline?.requireHumanReview)
-  const reviewer = REVIEWERS[language]
+  const reviewers = await content.fetch<string[] | null>(
+    `*[_type == "locale" && localeId == $language][0].reviewers`,
+    {language},
+  )
+  const reviewerIds = needsReview ? await globalUserIds(reviewers ?? []) : []
   const ops = [workflowField('translationId', written), workflowField('needsReview', needsReview)]
-  if (needsReview && reviewer) ops.push(workflowField('reviewer', [{type: 'user', id: reviewer}]))
+  if (reviewerIds.length) {
+    ops.push(
+      workflowField(
+        'reviewer',
+        reviewerIds.map((id) => ({type: 'user', id})),
+      ),
+    )
+  }
 
   return {outputs: {translationId: written}, ops}
 }

@@ -1,6 +1,6 @@
 import {Suspense, useState} from 'react'
 import {useCurrentUser, useQuery} from '@sanity/sdk-react'
-import {approve, checkQuestion, sendBack, useEngine, WORKFLOW_RESOURCE} from './workflow.ts'
+import {approve, sendBack, useCheckQuestion, useEngine, WORKFLOW_RESOURCE} from './workflow.ts'
 
 type Citation = {_key: string; path: string; excerpt: string}
 type Question = {
@@ -170,7 +170,7 @@ function StatusPill({status}: {status: string}) {
 }
 
 function Detail({question: q}: {question: Question}) {
-  const engine = useEngine()
+  const checkQuestion = useCheckQuestion()
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
   const status = q.status ?? 'new'
@@ -179,7 +179,7 @@ function Detail({question: q}: {question: Question}) {
     setBusy(true)
     setError('')
     try {
-      await checkQuestion(engine, q._id)
+      await checkQuestion(q._id)
     } catch {
       setError('Could not start the check. Try again.')
     } finally {
