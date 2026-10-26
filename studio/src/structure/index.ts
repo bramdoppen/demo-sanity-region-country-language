@@ -1,14 +1,13 @@
-import {
-  HomeIcon,
-  StarIcon,
-  InlineElementIcon,
-  BlockElementIcon,
-  PinIcon,
-  TranslateIcon,
-  WarningOutlineIcon,
-  TagIcon,
-} from '@sanity/icons'
+import {HomeIcon} from '@sanity/icons/Home'
+import {StarIcon} from '@sanity/icons/Star'
+import {InlineElementIcon} from '@sanity/icons/InlineElement'
+import {BlockElementIcon} from '@sanity/icons/BlockElement'
+import {PinIcon} from '@sanity/icons/Pin'
+import {TranslateIcon} from '@sanity/icons/Translate'
+import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
+import {TagIcon} from '@sanity/icons/Tag'
 import type {StructureBuilder, StructureResolverContext} from 'sanity/structure'
+import {paxonItems} from './paxon'
 
 const API_VERSION = '2024-01-01'
 
@@ -343,6 +342,10 @@ export function createStructure(S: StructureBuilder, context: StructureResolverC
     return S.list()
       .title('Content')
       .items([
+        ...paxonItems(S),
+
+        S.divider().title('Localization demo') as any,
+
         localizedSection('Home Page', HomeIcon, 'page', 'Home Page', 'page-by-language'),
         localizedSection(
           'Promotions Page',

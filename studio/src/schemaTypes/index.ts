@@ -11,12 +11,20 @@ import {callToAction} from './objects/callToAction'
 import {infoSection} from './objects/infoSection'
 import {bannerArray} from './documents/bannerArray'
 import {settings} from './singletons/settings'
+import {faq} from './documents/faq'
+import {brandGuideline} from './documents/brandGuideline'
+import {glossaryEntry} from './documents/glossaryEntry'
+import {customerQuestion} from './documents/customerQuestion'
 import {link} from './objects/link'
 import {blockContent} from './objects/blockContent'
 import button from './objects/button'
 import {blockContentTextOnly} from './objects/blockContentTextOnly'
 
 export const schemaTypes = [
+  faq,
+  customerQuestion,
+  brandGuideline,
+  glossaryEntry,
   settings,
   page,
   post,

@@ -1,5 +1,5 @@
 import {defineArrayMember, defineField, defineType} from 'sanity'
-import {InlineElementIcon} from '@sanity/icons'
+import {InlineElementIcon} from '@sanity/icons/InlineElement'
 import {localeFields} from '../shared/localeFields'
 
 export const bannerArray = defineType({

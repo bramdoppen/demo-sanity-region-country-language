@@ -7,14 +7,13 @@
 
 import {defineCliConfig} from 'sanity/cli'
 
-const projectId = process.env.SANITY_STUDIO_PROJECT_ID
+const projectId = process.env.SANITY_STUDIO_PROJECT_ID || 'jitb27qd'
 const dataset = process.env.SANITY_STUDIO_DATASET || 'production'
 
 export default defineCliConfig({
   api: {
     projectId,
     dataset,
-    orgId: 'o4Dsxelnb',
   },
   studioHost: process.env.SANITY_STUDIO_STUDIO_HOST || '',
   deployment: {

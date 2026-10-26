@@ -1,5 +1,5 @@
 import {defineField, defineType} from 'sanity'
-import {TranslateIcon} from '@sanity/icons'
+import {TranslateIcon} from '@sanity/icons/Translate'
 
 export const locale = defineType({
   name: 'locale',

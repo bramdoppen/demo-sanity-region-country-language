@@ -7,15 +7,18 @@ import {
   Button,
   Card,
   Flex,
-  Popover,
   Spinner,
   Stack,
   Text,
   TextInput,
-  Tooltip,
   useClickOutsideEvent,
 } from '@sanity/ui'
-import {AddIcon, CheckmarkIcon, SplitVerticalIcon, TranslateIcon} from '@sanity/icons'
+import {Popover} from '@sanity/ui/popover'
+import {Tooltip} from '@sanity/ui/tooltip'
+import {AddIcon} from '@sanity/icons/Add'
+import {CheckmarkIcon} from '@sanity/icons/Checkmark'
+import {SplitVerticalIcon} from '@sanity/icons/SplitVertical'
+import {TranslateIcon} from '@sanity/icons/Translate'
 import {
   useDocumentInternationalizationContext,
   type Language,
@@ -292,7 +295,7 @@ export function FilteredLanguageMenu({documentId, schemaType}: FilteredLanguageM
           </Text>
         </Box>
       ) : (
-        <Stack space={1}>
+        <Stack gap={1}>
           {displayLanguages.length > 4 && (
             <TextInput
               onChange={(e: React.ChangeEvent<HTMLInputElement>) =>

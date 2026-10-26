@@ -1,17 +1,38 @@
 import {Suspense} from 'react'
 import Link from 'next/link'
+import {draftMode} from 'next/headers'
 import {PortableText} from '@portabletext/react'
 
 import {AllPosts} from '@/app/components/Posts'
 import GetStartedCode from '@/app/components/GetStartedCode'
 import SideBySideIcons from '@/app/components/SideBySideIcons'
 import {settingsQuery} from '@/sanity/lib/queries'
-import {sanityFetch} from '@/sanity/lib/live'
+import {getDynamicFetchOptions, sanityFetch, type DynamicFetchOptions} from '@/sanity/lib/live'
 import {dataAttr} from '@/sanity/lib/utils'
 
 export default async function Page() {
+  const {isEnabled: isDraftMode} = await draftMode()
+  if (isDraftMode) {
+    return (
+      <Suspense>
+        <DynamicPage />
+      </Suspense>
+    )
+  }
+  return <CachedPage perspective="published" stega={false} />
+}
+
+async function DynamicPage() {
+  const {perspective, stega} = await getDynamicFetchOptions()
+  return <CachedPage perspective={perspective} stega={stega} />
+}
+
+async function CachedPage({perspective, stega}: DynamicFetchOptions) {
+  'use cache'
   const {data: settings} = await sanityFetch({
     query: settingsQuery,
+    perspective,
+    stega,
   })
 
   return (
@@ -85,7 +106,9 @@ export default async function Page() {
       <div className="border-t border-gray-100 bg-gray-50">
         <div className="container">
           <aside className="py-12 sm:py-20">
-            <Suspense>{await AllPosts()}</Suspense>
+            <Suspense>
+              <AllPosts perspective={perspective} stega={stega} />
+            </Suspense>
           </aside>
         </div>
       </div>

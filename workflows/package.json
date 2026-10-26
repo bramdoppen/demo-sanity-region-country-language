@@ -1,0 +1,27 @@
+{
+  "name": "workflows",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "seed": "node --env-file=.env scripts/seed.ts",
+    "reset": "node --env-file=.env scripts/reset.ts",
+    "translate": "node --env-file=.env scripts/translate.ts",
+    "wf:check": "sanity-workflows deploy --check",
+    "wf:deploy": "sanity-workflows deploy --no-share-defs",
+    "drain": "node --env-file=.env scripts/drain.ts",
+    "ask": "node --env-file=.env scripts/ask.ts",
+    "kb:ask": "node --env-file=.env scripts/kb-ask.ts",
+    "type-check": "tsc --noEmit",
+    "localize": "node --env-file=.env scripts/localize.ts"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.32.2",
+    "@sanity/client": "^8.11.0",
+    "@sanity/workflow-cli": "0.37.0",
+    "@sanity/workflow-engine": "0.37.0"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.5",
+    "typescript": "^7.0.2"
+  }
+}

@@ -1,0 +1,290 @@
+[
+  {
+    "_id": "paxon-faq-api-de",
+    "answer": "Bitten Sie Ihren Kundenbetreuer um API-Zugangsdaten. Sie erhalten zunächst einen Sandbox-Schlüssel für die Entwicklung und Tests. Nach einer erfolgreichen Testbestellung werden die Produktivschlüssel ausgestellt.",
+    "language": "de",
+    "question": "Wie erhalte ich Zugriff auf die API?",
+    "sourceFaq": "paxon-faq-api",
+    "topic": "api"
+  },
+  {
+    "_id": "paxon-faq-api-fr",
+    "answer": "Demandez vos identifiants API à votre responsable de compte. Vous recevrez d’abord une clé d’environnement de test pour le développement et les essais ; les clés de production seront délivrées après la réussite d’une commande test.",
+    "language": "fr",
+    "question": "Comment puis-je obtenir un accès à l’API ?",
+    "sourceFaq": "paxon-faq-api",
+    "topic": "api"
+  },
+  {
+    "_id": "paxon-faq-api-nl",
+    "answer": "Vraag uw accountmanager om API-inloggegevens. U ontvangt eerst een sandbox-sleutel waarmee u kunt ontwikkelen en testen. Na een geslaagde testbestelling ontvangt u de productiesleutels.",
+    "language": "nl",
+    "question": "Hoe krijg ik toegang tot de API?",
+    "sourceFaq": "paxon-faq-api",
+    "topic": "api"
+  },
+  {
+    "_id": "paxon-faq-commerce-de",
+    "answer": "Paxon Commerce Solutions unterstützt Sie dabei, Zahlungen zu optimieren und Betrug zu verhindern, sodass mehr legitime Bestellungen abgewickelt werden und Sie weniger Rückbuchungen erhalten.",
+    "language": "de",
+    "question": "Was ist Paxon Commerce Solutions?",
+    "sourceFaq": "paxon-faq-commerce",
+    "topic": "commerce"
+  },
+  {
+    "_id": "paxon-faq-commerce-fr",
+    "answer": "Paxon Commerce Solutions vous aide à optimiser les paiements et à lutter contre la fraude, afin qu’un plus grand nombre de commandes légitimes soient traitées et que vous subissiez moins de rétrofacturations.",
+    "language": "fr",
+    "question": "Que sont les solutions Paxon Commerce Solutions ?",
+    "sourceFaq": "paxon-faq-commerce",
+    "topic": "commerce"
+  },
+  {
+    "_id": "paxon-faq-commerce-nl",
+    "answer": "Paxon Commerce Solutions helpt u betalingen te optimaliseren en fraude te voorkomen, zodat meer legitieme bestellingen worden verwerkt en u minder terugboekingen ontvangt.",
+    "language": "nl",
+    "question": "Wat is Paxon Commerce Solutions?",
+    "sourceFaq": "paxon-faq-commerce",
+    "topic": "commerce"
+  },
+  {
+    "_id": "paxon-faq-delivery-times-de",
+    "answer": "Paketsendungen werden in der Regel innerhalb von 1 bis 3 Werktagen zugestellt. Die Laufzeiten für LTL und Komplettladungen hängen von der jeweiligen Strecke ab und werden bei der Buchung der Sendung bestätigt.",
+    "language": "de",
+    "question": "Wie lange dauert die Lieferung?",
+    "sourceFaq": "paxon-faq-delivery-times",
+    "topic": "transportation"
+  },
+  {
+    "_id": "paxon-faq-delivery-times-fr",
+    "answer": "Les livraisons de colis arrivent généralement sous 1 à 3 jours ouvrés. Les délais d’acheminement des expéditions LTL et par camion complet dépendent de l’itinéraire et sont confirmés lors de la réservation de l’expédition.",
+    "language": "fr",
+    "question": "Quel est le délai de livraison ?",
+    "sourceFaq": "paxon-faq-delivery-times",
+    "topic": "transportation"
+  },
+  {
+    "_id": "paxon-faq-delivery-times-nl",
+    "answer": "Pakketzendingen worden doorgaans binnen 1 tot 3 werkdagen geleverd. De transittijden voor LTL en volledige vrachtwagenladingen zijn afhankelijk van het traject en worden bevestigd wanneer de zending wordt geboekt.",
+    "language": "nl",
+    "question": "Hoe lang duurt de levering?",
+    "sourceFaq": "paxon-faq-delivery-times",
+    "topic": "transportation"
+  },
+  {
+    "_id": "paxon-faq-industries-de",
+    "answer": "Paxon unterstützt Marken aus den Bereichen Gesundheit und Wellness, Mode, Schönheit und Kosmetik, Konsumgüter, Haushaltswaren und Unterhaltungselektronik.",
+    "language": "de",
+    "question": "Welche Branchen unterstützt Paxon?",
+    "sourceFaq": "paxon-faq-industries",
+    "topic": "fulfillment"
+  },
+  {
+    "_id": "paxon-faq-industries-fr",
+    "answer": "Paxon accompagne les marques des secteurs de la santé et du bien-être, de la mode, de la beauté et des cosmétiques, des biens de consommation, des articles pour la maison et de l’électronique grand public.",
+    "language": "fr",
+    "question": "Quels secteurs d’activité Paxon prend-il en charge ?",
+    "sourceFaq": "paxon-faq-industries",
+    "topic": "fulfillment"
+  },
+  {
+    "_id": "paxon-faq-industries-nl",
+    "answer": "Paxon ondersteunt merken in de sectoren gezondheid en welzijn, mode, beauty en cosmetica, consumptiegoederen, huishoudartikelen en consumentenelektronica.",
+    "language": "nl",
+    "question": "Welke sectoren ondersteunt Paxon?",
+    "sourceFaq": "paxon-faq-industries",
+    "topic": "fulfillment"
+  },
+  {
+    "_id": "paxon-faq-kitting-de",
+    "answer": "Ja. Im Rahmen unserer Kitting-Dienstleistung stellen wir Geschenksets, Produktpakete und Abonnementboxen nach Ihren Vorgaben zusammen, einschließlich Beilagen und Markenverpackungen. Dies erfolgt als Teil der Kommissionierung und Verpackung.",
+    "language": "de",
+    "question": "Kann Paxon Geschenksets, Kits oder Abonnementboxen zusammenstellen?",
+    "sourceFaq": "paxon-faq-kitting",
+    "topic": "fulfillment"
+  },
+  {
+    "_id": "paxon-faq-kitting-fr",
+    "answer": "Oui. Notre service de kitting assemble des coffrets cadeaux, des lots et des box par abonnement selon vos spécifications, y compris les encarts et les emballages à votre marque, dans le cadre du processus de préparation de commandes.",
+    "language": "fr",
+    "question": "Paxon peut-il créer des coffrets cadeaux, des kits ou des box par abonnement ?",
+    "sourceFaq": "paxon-faq-kitting",
+    "topic": "fulfillment"
+  },
+  {
+    "_id": "paxon-faq-kitting-nl",
+    "answer": "Ja. Onze kittingservice stelt geschenksets, bundels en abonnementsboxen samen volgens uw specificaties, inclusief bijsluiters en merkverpakkingen, als onderdeel van het proces voor orderpicking en verpakking.",
+    "language": "nl",
+    "question": "Kan Paxon geschenksets, kits of abonnementsboxen samenstellen?",
+    "sourceFaq": "paxon-faq-kitting",
+    "topic": "fulfillment"
+  },
+  {
+    "_id": "paxon-faq-onboarding-de",
+    "answer": "Das Onboarding dauert etwa vier Wochen. Ihr Onboarding-Manager bindet Ihren Webshop über eine unserer Standardintegrationen an, richtet Ihre Produkte ein und führt vor der Inbetriebnahme Testbestellungen durch.",
+    "language": "de",
+    "question": "Wie verbinde ich meinen Webshop mit Paxon?",
+    "sourceFaq": "paxon-faq-onboarding",
+    "topic": "onboarding"
+  },
+  {
+    "_id": "paxon-faq-onboarding-fr",
+    "answer": "L’intégration prend environ quatre semaines. Votre responsable de l’intégration connecte votre boutique en ligne à l’aide de l’une de nos intégrations standard, configure vos produits et effectue des commandes de test avant la mise en service.",
+    "language": "fr",
+    "question": "Comment connecter votre boutique en ligne à Paxon ?",
+    "sourceFaq": "paxon-faq-onboarding",
+    "topic": "onboarding"
+  },
+  {
+    "_id": "paxon-faq-onboarding-nl",
+    "answer": "De onboarding duurt ongeveer vier weken. Uw onboardingmanager koppelt uw webshop via een van onze standaardintegraties, stelt uw producten in en voert testbestellingen uit voordat u live gaat.",
+    "language": "nl",
+    "question": "Hoe koppel ik mijn webshop aan Paxon?",
+    "sourceFaq": "paxon-faq-onboarding",
+    "topic": "onboarding"
+  },
+  {
+    "_id": "paxon-faq-pick-pack-de",
+    "answer": "Bestellungen, die vor 2 p.m. Ortszeit des Lagers eingehen, werden noch am selben Geschäftstag kommissioniert, verpackt und an den Frachtführer übergeben. Später eingehende Bestellungen werden am nächsten Geschäftstag versandt.",
+    "language": "de",
+    "question": "Wie schnell werden Bestellungen kommissioniert, verpackt und versendet?",
+    "sourceFaq": "paxon-faq-pick-pack",
+    "topic": "fulfillment"
+  },
+  {
+    "_id": "paxon-faq-pick-pack-fr",
+    "answer": "Les commandes reçues avant 2 p.m., heure locale de l’entrepôt, sont préparées, emballées et remises au transporteur le jour ouvré même. Les commandes reçues plus tard sont expédiées le jour ouvré suivant.",
+    "language": "fr",
+    "question": "Dans quels délais les commandes sont-elles préparées, emballées et expédiées ?",
+    "sourceFaq": "paxon-faq-pick-pack",
+    "topic": "fulfillment"
+  },
+  {
+    "_id": "paxon-faq-pick-pack-nl",
+    "answer": "Bestellingen die vóór 14.00 uur lokale tijd bij de logistieke partner worden ontvangen, worden dezelfde werkdag verzameld, verpakt en aan de vervoerder overgedragen. Bestellingen die later worden ontvangen, worden de volgende werkdag verzonden.",
+    "language": "nl",
+    "question": "Hoe snel worden bestellingen verzameld, verpakt en verzonden?",
+    "sourceFaq": "paxon-faq-pick-pack",
+    "topic": "fulfillment"
+  },
+  {
+    "_id": "paxon-faq-receiving-de",
+    "answer": "Unser Team nimmt jede eingehende Sendung entgegen, zählt und prüft sie anhand Ihrer Versandvorankündigung. Der Bestand wird eingelagert und steht innerhalb von 48 hours nach Ankunft in Ihrem Paxon-Portal zum Verkauf bereit.",
+    "language": "de",
+    "question": "Was geschieht, wenn mein Warenbestand in einem Paxon-Lager eintrifft?",
+    "sourceFaq": "paxon-faq-receiving",
+    "topic": "fulfillment"
+  },
+  {
+    "_id": "paxon-faq-receiving-fr",
+    "answer": "Notre équipe réceptionne, compte et contrôle chaque livraison entrante en la comparant à votre avis d’expédition préalable. Le stock est ensuite rangé et devient disponible à la vente dans votre portail Paxon dans les 48 heures suivant son arrivée.",
+    "language": "fr",
+    "question": "Que se passe-t-il lorsque mon stock arrive dans un entrepôt Paxon ?",
+    "sourceFaq": "paxon-faq-receiving",
+    "topic": "fulfillment"
+  },
+  {
+    "_id": "paxon-faq-receiving-nl",
+    "answer": "Ons team ontvangt, telt en controleert elke inkomende zending aan de hand van uw voorafgaande verzendmelding. De voorraad wordt opgeslagen en is binnen 48 hours of arrival beschikbaar voor verkoop in uw Paxon-portaal.",
+    "language": "nl",
+    "question": "Wat gebeurt er wanneer mijn voorraad aankomt in een magazijn van Paxon?",
+    "sourceFaq": "paxon-faq-receiving",
+    "topic": "fulfillment"
+  },
+  {
+    "_id": "paxon-faq-regulated-de",
+    "answer": "Ja. Specialized & Regulated Logistics umfasst die Lagerung und Auftragsabwicklung für temperaturkritische und regulierte Artikel von Gesundheits- und Wellnessmarken, einschließlich Compliance-Abwicklung und Chargenverfolgung.",
+    "language": "de",
+    "question": "Kann Paxon temperaturempfindliche oder regulierte Gesundheitsprodukte handhaben?",
+    "sourceFaq": "paxon-faq-regulated",
+    "topic": "regulated"
+  },
+  {
+    "_id": "paxon-faq-regulated-fr",
+    "answer": "Oui. La logistique spécialisée et réglementée couvre le stockage et la préparation de commandes d’articles thermosensibles et réglementés pour les marques de santé et de bien-être, avec gestion de la conformité et suivi des lots.",
+    "language": "fr",
+    "question": "Paxon peut-il prendre en charge des produits de santé thermosensibles ou réglementés ?",
+    "sourceFaq": "paxon-faq-regulated",
+    "topic": "regulated"
+  },
+  {
+    "_id": "paxon-faq-regulated-nl",
+    "answer": "Ja. Specialized & Regulated Logistics omvat de opslag en orderafhandeling van temperatuurgevoelige en gereglementeerde artikelen voor merken in de gezondheids- en welzijnssector, inclusief nalevingsbeheer en lottracering.",
+    "language": "nl",
+    "question": "Kan Paxon temperatuurgevoelige of gereglementeerde gezondheidsproducten verwerken?",
+    "sourceFaq": "paxon-faq-regulated",
+    "topic": "regulated"
+  },
+  {
+    "_id": "paxon-faq-returns-de",
+    "answer": "Ihre Kunden können eine Bestellung innerhalb von 30 Tagen nach der Lieferung zurücksenden. Sie leiten die Retoure in Ihrem Onlineshop ein und drucken ein vorfrankiertes Rücksendeetikett aus. Paxon nimmt den Artikel entgegen und prüft ihn innerhalb von 2 Werktagen.",
+    "language": "de",
+    "question": "Wie lange haben Kunden Zeit, eine Bestellung zurückzusenden?",
+    "sourceFaq": "paxon-faq-returns",
+    "topic": "returns"
+  },
+  {
+    "_id": "paxon-faq-returns-fr",
+    "answer": "Vos clients peuvent retourner une commande dans les 30 jours suivant sa livraison. Ils lancent la procédure de retour dans votre boutique en ligne et impriment une étiquette prépayée ; Paxon reçoit et inspecte l’article dans un délai de 2 jours ouvrés.",
+    "language": "fr",
+    "question": "De combien de temps les clients disposent-ils pour retourner une commande ?",
+    "sourceFaq": "paxon-faq-returns",
+    "topic": "returns"
+  },
+  {
+    "_id": "paxon-faq-returns-nl",
+    "answer": "Uw klanten kunnen een bestelling binnen 30 dagen na levering retourneren. Ze melden de retourzending aan in uw webshop en drukken een vooraf betaald label af. Paxon ontvangt en controleert het artikel binnen 2 werkdagen.",
+    "language": "nl",
+    "question": "Hoe lang hebben klanten de tijd om een bestelling te retourneren?",
+    "sourceFaq": "paxon-faq-returns",
+    "topic": "returns"
+  },
+  {
+    "_id": "paxon-faq-returns-value-de",
+    "answer": "Wir verwandeln Retouren in Mehrwert: Jeder zurückgesandte Artikel wird geprüft und bewertet und anschließend wieder eingelagert, aufbereitet oder recycelt. Das Ergebnis jeder Retoure können Sie in Ihrem Paxon-Portal einsehen.",
+    "language": "de",
+    "question": "Was macht Paxon mit zurückgesendeten Produkten?",
+    "sourceFaq": "paxon-faq-returns-value",
+    "topic": "returns"
+  },
+  {
+    "_id": "paxon-faq-returns-value-fr",
+    "answer": "Nous transformons les retours en valeur : chaque article retourné est inspecté et évalué, puis remis en stock, reconditionné ou recyclé. Vous pouvez consulter le traitement de chaque retour dans votre portail Paxon.",
+    "language": "fr",
+    "question": "Que fait Paxon des produits retournés ?",
+    "sourceFaq": "paxon-faq-returns-value",
+    "topic": "returns"
+  },
+  {
+    "_id": "paxon-faq-returns-value-nl",
+    "answer": "Wij zetten retourzendingen om in waarde: elk geretourneerd artikel wordt gecontroleerd en beoordeeld, en vervolgens opnieuw in voorraad genomen, opgeknapt of gerecycleerd. U ziet het resultaat van elke retourzending in uw Paxon-portaal.",
+    "language": "nl",
+    "question": "Wat doet Paxon met geretourneerde producten?",
+    "sourceFaq": "paxon-faq-returns-value",
+    "topic": "returns"
+  },
+  {
+    "_id": "paxon-faq-shipping-options-de",
+    "answer": "Das Frachtmanagement von Paxon plant und steuert Paket-, LTL- (Teilladungs-) und Komplettladungssendungen, abgestimmt auf die jeweiligen Anforderungen jeder Sendung.",
+    "language": "de",
+    "question": "Welche Versandoptionen bietet Paxon an?",
+    "sourceFaq": "paxon-faq-shipping-options",
+    "topic": "transportation"
+  },
+  {
+    "_id": "paxon-faq-shipping-options-fr",
+    "answer": "La solution de gestion du fret de Paxon planifie et exécute les expéditions de colis, les expéditions LTL (chargement partiel) et les expéditions par camion complet, en fonction des exigences propres à chaque expédition.",
+    "language": "fr",
+    "question": "Quelles options d’expédition Paxon propose-t-il ?",
+    "sourceFaq": "paxon-faq-shipping-options",
+    "topic": "transportation"
+  },
+  {
+    "_id": "paxon-faq-shipping-options-nl",
+    "answer": "Paxon vrachtmanagement plant en voert pakket-, LTL- (deelvracht) en volledige vrachtwagenzendingen uit, afgestemd op de vereisten van elke zending.",
+    "language": "nl",
+    "question": "Welke verzendopties biedt Paxon aan?",
+    "sourceFaq": "paxon-faq-shipping-options",
+    "topic": "transportation"
+  }
+]

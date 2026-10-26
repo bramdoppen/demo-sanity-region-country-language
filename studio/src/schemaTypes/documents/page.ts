@@ -1,5 +1,5 @@
 import {defineField, defineType} from 'sanity'
-import {DocumentIcon} from '@sanity/icons'
+import {DocumentIcon} from '@sanity/icons/Document'
 import {localeFields} from '../shared/localeFields'
 
 export const page = defineType({

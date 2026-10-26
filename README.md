@@ -88,13 +88,53 @@ npm run dev
 
 Create a few **Region**, **Country**, and **Locale** documents in the Studio first. For example:
 
-| Region | Country     | Locales       |
-|--------|-------------|---------------|
-| EU     | Netherlands | `nl`, `en`    |
-| EU     | France      | `fr`, `en`    |
-| US     | USA         | `en`, `es`    |
+| Region | Country     | Locales    |
+| ------ | ----------- | ---------- |
+| EU     | Netherlands | `nl`, `en` |
+| EU     | France      | `fr`, `en` |
+| US     | USA         | `en`, `es` |
 
 Then switch to the EU or US workspace and start creating pages — they will be scoped to the correct region, country, and language.
+
+## Paxon Question Desk demo
+
+Every customer question makes the help content better. A question from the chatbot or contact centre lands in the Question Desk, gets checked against the Paxon Knowledge Base, and if the help content is missing or outdated, an FAQ change is drafted, translated into NL, FR and DE, checked against the brand guidelines and reviewed before it is published.
+
+| Folder           | What it is                                                               |
+| ---------------- | ------------------------------------------------------------------------ |
+| `studio/`        | FAQ, brand guideline and customer question schemas, Workflows plugin     |
+| `workflows/`     | Workflow definitions, effect handlers, seed/reset scripts, local drainer |
+| `question-desk/` | App SDK app: inbox, question detail, "For me" review list                |
+
+The two workflows:
+
+- **FAQ localization** (`workflows/definitions/faq-localization.ts`): spawns one `faq-language` subworkflow per language. Each one translates with Agent Actions, runs a brand check and a consistency check, fixes itself when flagged, and goes to review. Languages whose brand guideline has "Always needs a human reviewer" (FR and DE) go to the named reviewer; the others are approved automatically. When all languages are approved, everything is published.
+- **Question to FAQ** (`workflows/definitions/question-to-faq.ts`): extracts signals, asks the Knowledge Base whether the question is answered, outdated or missing (with citations), drafts the FAQ change and hands it to the FAQ localization workflow.
+
+Brand guidelines (formality, tone, terms to use/avoid, human-review requirement) and the glossary are edited in the Studio under **Paxon (demo)**; the translation and check prompts read them at run time.
+
+### Setup
+
+```shell
+npm install
+cp workflows/.env.example workflows/.env   # fill in tokens and reviewer user IDs
+npm run seed                                # FAQs, brand guidelines, glossary, questions + translations
+npm run wf:deploy                           # deploy the workflow definitions
+```
+
+Set up the Knowledge Base and MCP endpoint as described in [`workflows/KNOWLEDGE_BASE.md`](workflows/KNOWLEDGE_BASE.md). Until then, `KB_REHEARSAL=true` lets you rehearse against the FAQs directly.
+
+### Running
+
+```shell
+npm run dev            # frontend, Studio (3333) and Question Desk (3334)
+npm run drain          # runs the automatic workflow steps; add -- --step to pause before each step
+npm run reset          # back to a clean demo state
+```
+
+Other cues: `npm run ask -- 2` checks question 2 from the terminal, `npm run localize -- <faqId>` localizes any FAQ, `npm run kb:ask -- "question"` queries the Knowledge Base, and `npm run translate -- --all` bulk translates.
+
+See [`workflows/RECORDING_SCRIPT.md`](workflows/RECORDING_SCRIPT.md) for the click-through and [`workflows/REAL_VS_SCAFFOLDING.md`](workflows/REAL_VS_SCAFFOLDING.md) for what is production-shaped and what is demo scaffolding.
 
 ## Resources
 

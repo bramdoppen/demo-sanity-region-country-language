@@ -1,5 +1,5 @@
 import {defineField, defineType} from 'sanity'
-import {StarIcon} from '@sanity/icons'
+import {StarIcon} from '@sanity/icons/Star'
 import {localeFields} from '../shared/localeFields'
 
 export const promotionsPage = defineType({

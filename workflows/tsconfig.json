@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["ES2023"],
+    "module": "Preserve",
+    "moduleResolution": "bundler",
+    "strict": true,
+    "skipLibCheck": true,
+    "noEmit": true,
+    "allowImportingTsExtensions": true,
+    "types": ["node"],
+    "jsx": "react-jsx"
+  },
+  "include": ["**/*.ts", "../studio/src/translation/promptAssembly.ts", "../studio/src/translation/languages.ts", "../studio/src/translation/translateFaq.ts"],
+  "exclude": ["node_modules"]
+}

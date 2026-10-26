@@ -1,5 +1,5 @@
 import {defineField, defineType} from 'sanity'
-import {EarthGlobeIcon} from '@sanity/icons'
+import {EarthGlobeIcon} from '@sanity/icons/EarthGlobe'
 
 export const region = defineType({
   name: 'region',

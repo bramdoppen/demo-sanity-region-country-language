@@ -240,6 +240,105 @@ export type Settings = {
   }
 }
 
+export type GlossaryEntry = {
+  _id: string
+  _type: 'glossaryEntry'
+  _createdAt: string
+  _updatedAt: string
+  _rev: string
+  term: string
+  status?: 'approved' | 'forbidden' | 'provisional'
+  doNotTranslate?: boolean
+  definition?: string
+  translations?: Array<{
+    language?: 'nl' | 'fr' | 'de'
+    translation?: string
+    _type: 'glossaryTranslation'
+    _key: string
+  }>
+}
+
+export type BrandGuideline = {
+  _id: string
+  _type: 'brandGuideline'
+  _createdAt: string
+  _updatedAt: string
+  _rev: string
+  language: 'en' | 'nl' | 'fr' | 'de'
+  formality?: 'formal' | 'neutral' | 'informal'
+  tone?: Array<string>
+  instructions?: string
+  useTerms?: Array<{
+    avoid?: string
+    use?: string
+    _type: 'termPair'
+    _key: string
+  }>
+}
+
+export type FaqReference = {
+  _ref: string
+  _type: 'reference'
+  _weak?: boolean
+  [internalGroqTypeReferenceTo]?: 'faq'
+}
+
+export type CustomerQuestionReference = {
+  _ref: string
+  _type: 'reference'
+  _weak?: boolean
+  [internalGroqTypeReferenceTo]?: 'customerQuestion'
+}
+
+export type Faq = {
+  _id: string
+  _type: 'faq'
+  _createdAt: string
+  _updatedAt: string
+  _rev: string
+  question: string
+  answer: string
+  topic?:
+    'fulfillment' | 'returns' | 'transportation' | 'regulated' | 'commerce' | 'onboarding' | 'api'
+  language: 'en' | 'nl' | 'fr' | 'de'
+  sourceFaq?: FaqReference
+  relatedQuestion?: CustomerQuestionReference
+  demoRun?: boolean
+}
+
+export type CustomerQuestion = {
+  _id: string
+  _type: 'customerQuestion'
+  _createdAt: string
+  _updatedAt: string
+  _rev: string
+  questionText: string
+  channel?: 'chatbot' | 'contactCentre'
+  market?: string
+  language?: 'en' | 'nl' | 'fr' | 'de'
+  receivedAt?: string
+  signals?: {
+    intent?: string
+    topic?: string
+    brand?: string
+    market?: string
+    language?: string
+  }
+  kbVerdict?: 'answered' | 'outdated' | 'missing'
+  kbReason?: string
+  kbAnswer?: string
+  citations?: Array<{
+    path?: string
+    excerpt?: string
+    _type: 'citation'
+    _key: string
+  }>
+  draftFaq?: FaqReference
+  faqBefore?: string
+  faqAfter?: string
+  demoRun?: boolean
+}
+
 export type SanityAssistInstructionTask = {
   _type: 'sanity.assist.instructionTask'
   path?: string
@@ -724,6 +823,12 @@ export type AllSanitySchemaTypes =
   | Category
   | Slug
   | Settings
+  | GlossaryEntry
+  | BrandGuideline
+  | FaqReference
+  | CustomerQuestionReference
+  | Faq
+  | CustomerQuestion
   | SanityAssistInstructionTask
   | SanityAssistTaskStatus
   | SanityAssistSchemaTypeAnnotations
@@ -1056,8 +1161,7 @@ export type PagesSlugsResult = Array<{
 }>
 
 // Query TypeMap
-import '@sanity/client'
-declare module '@sanity/client' {
+declare global {
   interface SanityQueries {
     '*[_type == "settings"][0]': SettingsQueryResult
     '\n  *[_type == \'page\' && slug.current == $slug][0]{\n    _id,\n    _type,\n    name,\n    slug,\n    heading,\n    subheading,\n    "pageBuilder": pageBuilder[]{\n      ...,\n      _type == "callToAction" => {\n        ...,\n        button {\n          ...,\n          \n  link {\n      ...,\n      \n  _type == "link" => {\n    "page": page->slug.current,\n    "post": post->slug.current\n  }\n\n      }\n\n        }\n      },\n      _type == "infoSection" => {\n        content[]{\n          ...,\n          markDefs[]{\n            ...,\n            \n  _type == "link" => {\n    "page": page->slug.current,\n    "post": post->slug.current\n  }\n\n          }\n        }\n      },\n    },\n  }\n': GetPageQueryResult
@@ -1068,4 +1172,8 @@ declare module '@sanity/client' {
     '\n  *[_type == "post" && defined(slug.current)]\n  {"slug": slug.current}\n': PostPagesSlugsResult
     '\n  *[_type == "page" && defined(slug.current)]\n  {"slug": slug.current}\n': PagesSlugsResult
   }
+}
+// Lets @sanity/client releases that predate the global registry read it too
+declare module '@sanity/client' {
+  interface SanityQueries extends globalThis.SanityQueries {}
 }

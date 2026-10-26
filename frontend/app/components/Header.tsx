@@ -1,10 +1,13 @@
 import Link from 'next/link'
 import {settingsQuery} from '@/sanity/lib/queries'
-import {sanityFetch} from '@/sanity/lib/live'
+import {sanityFetch, type DynamicFetchOptions} from '@/sanity/lib/live'
 
-export default async function Header() {
+export default async function Header({perspective, stega}: DynamicFetchOptions) {
+  'use cache'
   const {data: settings} = await sanityFetch({
     query: settingsQuery,
+    perspective,
+    stega,
   })
 
   return (

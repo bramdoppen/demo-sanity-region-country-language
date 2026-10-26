@@ -29,3 +29,10 @@ next-env.d.ts
 
 # VS Code
 .vscode
+# Question Desk app
+/question-desk/dist
+/question-desk/.sanity
+
+# workspace dependencies
+/question-desk/node_modules
+/workflows/node_modules

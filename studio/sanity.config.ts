@@ -9,8 +9,10 @@ import {documentInternationalization} from '@sanity/document-internationalizatio
 import {internationalizedArray} from 'sanity-plugin-internationalized-array'
 import {FilteredLanguageMenu} from './src/components/FilteredLanguageMenu'
 import {StudioLayout, queueToast} from './src/components/ToastBridge'
+import {TranslateFaqAction} from './src/translation/TranslateFaqAction'
+import {workflowDefaultDocumentNode, workflowStudioPlugin} from '@sanity/workflow-studio-plugin'
 
-const projectId = process.env.SANITY_STUDIO_PROJECT_ID
+const projectId = process.env.SANITY_STUDIO_PROJECT_ID || 'jitb27qd'
 const dataset = process.env.SANITY_STUDIO_DATASET || 'production'
 
 export default defineConfig({
@@ -20,7 +22,8 @@ export default defineConfig({
   dataset,
 
   plugins: [
-    structureTool({structure: createStructure}),
+    structureTool({structure: createStructure, defaultDocumentNode: workflowDefaultDocumentNode()}),
+    workflowStudioPlugin({partition: 'demo', workflowDataset: 'workflows'}),
       documentInternationalization({
         supportedLanguages: async (client) => {
           const countries = await client.fetch<
@@ -188,6 +191,11 @@ export default defineConfig({
       components: {
         layout: StudioLayout,
       },
+    },
+
+    document: {
+      actions: (prev, context) =>
+        context.schemaType === 'faq' ? [...prev, TranslateFaqAction] : prev,
     },
 
     schema: {

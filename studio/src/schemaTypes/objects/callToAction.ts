@@ -1,11 +1,9 @@
 import {defineField, defineType} from 'sanity'
-import {
-  BulbOutlineIcon,
-  ComposeSparklesIcon,
-  LinkIcon,
-  ImageIcon,
-  ControlsIcon,
-} from '@sanity/icons'
+import {BulbOutlineIcon} from '@sanity/icons/BulbOutline'
+import {ComposeSparklesIcon} from '@sanity/icons/ComposeSparkles'
+import {LinkIcon} from '@sanity/icons/Link'
+import {ImageIcon} from '@sanity/icons/Image'
+import {ControlsIcon} from '@sanity/icons/Controls'
 
 /**
  * Call to action schema object.  Objects are reusable schema structures document.
