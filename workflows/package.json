@@ -13,7 +13,8 @@
     "kb:ask": "node --env-file=.env scripts/kb-ask.ts",
     "type-check": "tsc --noEmit",
     "localize": "node --env-file=.env scripts/localize.ts",
-    "insights": "node --env-file=.env scripts/insights.ts"
+    "insights": "node --env-file=.env scripts/insights.ts",
+    "kb:setup": "node --env-file=.env scripts/kb-setup.ts"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.32.2",
