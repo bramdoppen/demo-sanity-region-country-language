@@ -10,13 +10,12 @@ import {internationalizedArray} from 'sanity-plugin-internationalized-array'
 import {FilteredLanguageMenu} from './src/components/FilteredLanguageMenu'
 import {StudioLayout, queueToast} from './src/components/ToastBridge'
 
-const projectId = process.env.SANITY_STUDIO_PROJECT_ID || '69zhjgro'
+const projectId = process.env.SANITY_STUDIO_PROJECT_ID
 const dataset = process.env.SANITY_STUDIO_DATASET || 'production'
 
 export default defineConfig({
   name: 'default',
   title: 'Localization demo',
-
   projectId,
   dataset,
 
@@ -34,7 +33,7 @@ export default defineConfig({
           )
 
           return countries.flatMap((country) =>
-            (country.locales || []).map((loc) => ({
+            (country.locales || []).filter(Boolean).map((loc) => ({
               id: `${loc.localeId}-${country.countrySlug}`,
               title: `${loc.title} (${loc.localeId}-${country.countrySlug})`,
             })),
@@ -145,7 +144,7 @@ export default defineConfig({
           )
 
           return countries.flatMap((country) =>
-            (country.locales || []).map((loc) => ({
+            (country.locales || []).filter(Boolean).map((loc) => ({
               id: `${loc.localeId}-${country.countrySlug}`,
               title: `${loc.title} (${loc.localeId}-${country.countrySlug})`,
             })),
@@ -172,7 +171,7 @@ export default defineConfig({
               )
 
               return countries.flatMap((country) =>
-                (country.locales || []).map((loc) => ({
+                (country.locales || []).filter(Boolean).map((loc) => ({
                   id: `${loc.localeId}-${country.countrySlug}`,
                   title: `${loc.title} (${loc.localeId}-${country.countrySlug})`,
                 })),
