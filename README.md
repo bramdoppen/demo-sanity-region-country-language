@@ -111,7 +111,7 @@ The two workflows:
 - **FAQ localization** (`workflows/definitions/faq-localization.ts`): spawns one `faq-language` subworkflow per language. Each one translates with Agent Actions, runs a brand check and a consistency check, fixes itself when flagged, and goes to review. Languages whose brand guideline has "Always needs a human reviewer" (FR and DE) go to the named reviewer; the others are approved automatically. When all languages are approved, everything is published.
 - **Question to FAQ** (`workflows/definitions/question-to-faq.ts`): extracts signals, asks the Knowledge Base whether the question is answered, outdated or missing (with citations), drafts the FAQ change and hands it to the FAQ localization workflow.
 
-Questions come in two ways: seeded ones, and live ones from the help chat at `/help`. The chat searches the Knowledge Base over MCP, answers with Agent Actions, and records every conversation (including the Knowledge Base tool calls) with [Insights](https://www.sanity.io/docs/ai/sanity-context-insights). Classification scores each conversation and lists content gaps; every conversation with a gap becomes a new customer question in the Question Desk.
+Questions come in two ways: seeded ones, and live ones from the help chat at `/help`. The chat answers only from the Knowledge Base and records every conversation with [Insights](https://www.sanity.io/docs/ai/sanity-context-insights). Classification scores each conversation and lists content gaps; every conversation with a gap becomes a new customer question in the Question Desk.
 
 Brand guidelines (formality, tone, terms to use/avoid, human-review requirement) and the glossary are edited in the Studio under **Paxon (demo)**; the translation and check prompts read them at run time.
 
@@ -126,11 +126,12 @@ npm run wf:deploy                           # deploy the workflow definitions
 
 Set up the Knowledge Base and MCP endpoint as described in [`workflows/KNOWLEDGE_BASE.md`](workflows/KNOWLEDGE_BASE.md). Until then, `KB_REHEARSAL=true` lets you rehearse against the FAQs directly.
 
-The help chat and the Insights classification both run on Agent Actions, so no separate LLM key is needed. Add the organization token (role **Context Editor**) to `frontend/.env.local` as `SANITY_ORGANIZATION_TOKEN` and to `workflows/.env` as `SANITY_CONTEXT_TOKEN`. To run classification on a schedule, deploy the blueprint once:
+For the help chat and Insights, add the organization token (role **Context Editor**) and an OpenRouter key to `frontend/.env.local` (`SANITY_ORGANIZATION_TOKEN`, `OPENROUTER_API_KEY`) and `workflows/.env` (`SANITY_CONTEXT_TOKEN`, `OPENROUTER_API_KEY`). To run classification on a schedule, deploy the blueprint once:
 
 ```shell
 npx sanity blueprints init . --type ts --stack-name production --organization-id objVdfY4N
 npx sanity functions env add classify-conversations SANITY_ORGANIZATION_TOKEN <org token>
+npx sanity functions env add classify-conversations OPENROUTER_API_KEY <key>
 npx sanity blueprints deploy
 ```
 

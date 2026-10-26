@@ -7,7 +7,7 @@
 - **Brand guidelines and glossary** are Studio documents. Changing formality, tone, terms or the human-review flag changes the next run, with no code changes.
 - **Knowledge Base check** calls the Sanity Context MCP endpoint (`knowledge_base_search` / `knowledge_base_read`) and returns citations to the actual sources.
 - **Question Desk** is a real App SDK app using the logged-in user. Approve / send back fire actions on the same engine.
-- **Help chat + Insights**: the `/help` chat searches the Knowledge Base over MCP, answers with Agent Actions and saves each conversation with `client.context.conversations.save`. A scheduled Sanity Function classifies conversations with Agent Actions (same rubric as `@sanity/context/insights`) and records the result with `client.context.conversations.classify`; content gaps become customer questions.
+- **Help chat + Insights**: the `/help` chat uses the AI SDK with the Knowledge Base MCP tools and `sanityInsightsIntegration`; conversations are classified with `@sanity/context/insights` in a scheduled Sanity Function, and content gaps become customer questions.
 - **Studio** shows the workflow panel on documents through the official Workflows plugin.
 
 ## Scaffolding (demo only)

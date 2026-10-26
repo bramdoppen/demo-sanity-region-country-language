@@ -5,6 +5,7 @@
  *
  *   npm run insights
  */
+import {createOpenRouter} from '@openrouter/ai-sdk-provider'
 import {createClient} from '@sanity/client'
 import {
   classifyIntoQuestions,
@@ -25,11 +26,13 @@ const insights = createClient({
   useCdn: false,
   useProjectHostname: false,
 })
+const openrouter = createOpenRouter({apiKey: required('OPENROUTER_API_KEY')})
 
-console.log('Classifying help-chat conversations with Agent Actions…')
+console.log('Classifying help-chat conversations with Insights…')
 const results = await classifyIntoQuestions({
   insights,
   content,
+  model: openrouter(process.env.OPENROUTER_CLASSIFY_MODEL || 'anthropic/claude-haiku-5.5'),
   settledForMinutes: 0,
   onClassified: (r) => {
     const gaps = r.contentGaps.length

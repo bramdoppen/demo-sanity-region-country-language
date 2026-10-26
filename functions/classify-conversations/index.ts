@@ -1,3 +1,4 @@
+import {createOpenRouter} from '@openrouter/ai-sdk-provider'
 import {createClient} from '@sanity/client'
 import {scheduledEventHandler} from '@sanity/functions'
 
@@ -27,10 +28,12 @@ export const handler = scheduledEventHandler(async ({context}) => {
     token: context.clientOptions?.token,
     useCdn: false,
   })
+  const openrouter = createOpenRouter({apiKey: required('OPENROUTER_API_KEY')})
 
   const results = await classifyIntoQuestions({
     insights,
     content,
+    model: openrouter(process.env.OPENROUTER_CLASSIFY_MODEL || 'anthropic/claude-haiku-5.5'),
   })
   const questions = results.filter((r) => r.questionId).length
   console.log(
