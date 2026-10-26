@@ -1,6 +1,14 @@
 # Set up the Paxon help Knowledge Base
 
-Knowledge Bases are organization-level and created in the **Context** app in the Sanity Dashboard (organization `objVdfY4N`). It takes about five minutes. Run `npm run seed` first so the FAQs exist.
+Knowledge Bases are organization-level (organization `objVdfY4N`). Run `npm run seed` first so the FAQs exist.
+
+**Quick way:** `npm run kb:setup` does steps 1–3 through the API (already done for this demo: Knowledge Base `kbmPWFwX5zT2`). It needs a token with the Administrator or Developer role, so run it once with your CLI login:
+
+```shell
+cd workflows && SANITY_CONTEXT_TOKEN="$(node -e 'process.stdout.write(require(process.argv[1]).authToken)' ~/.config/sanity/config.json)" npm run kb:setup
+```
+
+Or click through the **Context** app in the Sanity Dashboard, which takes about five minutes:
 
 ## 1. Create the Knowledge Base
 
@@ -23,7 +31,7 @@ Context app → **Knowledge Bases** → **New**.
 
 This is a fictional 2023 brand page that still promises a **45-day** return window, while the FAQ says **30 days**. Leave it in on purpose: the build reports it as a conflict, and that conflict is how the demo question "Can I return after 40 days?" gets classified as **outdated**.
 
-Click **Build** and wait until the status is ready. Have a look at the **Issues** tab: the 30-day versus 45-day conflict should be listed there, which is worth showing on camera.
+Click **Build** and wait until the status is ready. The build may not list the 30-day versus 45-day conflict under **Issues** (ours didn't), but the Knowledge Base still reports it when asked: `npm run kb:ask -- "Can I return after 40 days?"` comes back **outdated** with a citation.
 
 ## 3. Create the MCP endpoint
 
