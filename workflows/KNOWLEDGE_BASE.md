@@ -52,6 +52,8 @@ Paste it into `workflows/.env`, which is git-ignored and never shown in the app:
 SANITY_CONTEXT_TOKEN="sk…"
 ```
 
+The help chat uses the same token for the Knowledge Base and for saving conversations to Insights. Put it in `frontend/.env.local` as `SANITY_ORGANIZATION_TOKEN` too. Saving and classifying conversations are writes: if `npm run insights` or the chat fails with a 403, give the token a Context role that can write, not just view.
+
 ## 5. Test it
 
 ```sh

@@ -12,13 +12,17 @@
     "ask": "node --env-file=.env scripts/ask.ts",
     "kb:ask": "node --env-file=.env scripts/kb-ask.ts",
     "type-check": "tsc --noEmit",
-    "localize": "node --env-file=.env scripts/localize.ts"
+    "localize": "node --env-file=.env scripts/localize.ts",
+    "insights": "node --env-file=.env scripts/insights.ts"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.32.2",
     "@sanity/client": "^8.11.0",
     "@sanity/workflow-cli": "0.37.0",
-    "@sanity/workflow-engine": "0.37.0"
+    "@sanity/workflow-engine": "0.37.0",
+    "@openrouter/ai-sdk-provider": "^3.1.0",
+    "@sanity/context": "^2.2.0",
+    "ai": "^7.0.154"
   },
   "devDependencies": {
     "@types/node": "^26.6.5",

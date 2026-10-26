@@ -1,0 +1,13 @@
+{
+  "name": "classify-conversations",
+  "private": true,
+  "type": "module",
+  "main": "index.ts",
+  "dependencies": {
+    "@openrouter/ai-sdk-provider": "^3.1.0",
+    "@sanity/client": "^8.11.0",
+    "@sanity/context": "^2.2.0",
+    "@sanity/functions": "^1.10.1",
+    "ai": "^7.0.154"
+  }
+}

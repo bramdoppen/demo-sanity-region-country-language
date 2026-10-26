@@ -11,9 +11,17 @@ Story: **every customer question makes the help content better.** About 6 minute
 5. Log in as the FR/DE reviewer (the user IDs in `REVIEWER_FR` / `REVIEWER_DE`), so "For me" fills up.
 6. Close the terminal that has `.env` open. Nothing with a token should be on screen.
 
+## 0. A customer asks the help chat (1 min) – optional, needs the Insights keys
+
+- Open `localhost:3000/help`, pick **France · Français**, ask: "Quelles sont vos heures limites de commande pendant le Black Friday ?"
+- The chat checks the Knowledge Base and says honestly that it doesn't have this, and offers the contact centre.
+- "Every conversation is saved to Insights. Insights scores it and spots what content was missing."
+- Run `npm run insights`: score, sentiment and the content gap print, and **a new question lands in the Question Desk inbox**, with a "From Insights" card.
+- Optional: show the Context app → Insights in the dashboard (success score, sentiment, content gaps).
+
 ## 1. The inbox (30s)
 
-- Show the **Inbox**: six questions from the chatbot and contact centre, in EN, FR, DE and NL, all status **New**.
+- Show the **Inbox**: six seeded questions (plus the one from the chat) from the chatbot and contact centre, in EN, FR, DE and NL, all status **New**.
 - "These come in every day. Usually they're answered and forgotten. Here, each one is a signal about our help content."
 
 ## 2. A question that's already answered (45s) – optional

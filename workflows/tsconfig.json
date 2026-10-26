@@ -11,6 +11,6 @@
     "types": ["node"],
     "jsx": "react-jsx"
   },
-  "include": ["**/*.ts", "../studio/src/translation/promptAssembly.ts", "../studio/src/translation/languages.ts", "../studio/src/translation/translateFaq.ts"],
+  "include": ["**/*.ts", "../studio/src/translation/promptAssembly.ts", "../studio/src/translation/languages.ts", "../studio/src/translation/translateFaq.ts", "../functions/classify-conversations/*.ts"],
   "exclude": ["node_modules"]
 }

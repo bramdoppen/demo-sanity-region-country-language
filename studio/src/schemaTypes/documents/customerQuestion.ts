@@ -63,6 +63,22 @@ export const customerQuestion = defineType({
       description: 'Kept in step with the "Question to FAQ" workflow.',
     }),
     defineField({
+      name: 'insights',
+      title: 'From Insights',
+      type: 'object',
+      group: 'question',
+      readOnly: true,
+      description:
+        'Set when the question came from a chat conversation that Insights flagged as a content gap.',
+      hidden: ({value}) => !value,
+      fields: [
+        defineField({name: 'contentGap', title: 'Content gap', type: 'string'}),
+        defineField({name: 'successScore', title: 'Success score (1–10)', type: 'number'}),
+        defineField({name: 'sentiment', type: 'string'}),
+        defineField({name: 'threadId', title: 'Conversation', type: 'string'}),
+      ],
+    }),
+    defineField({
       name: 'signals',
       title: 'Signals',
       type: 'object',
@@ -149,7 +165,11 @@ export const customerQuestion = defineType({
     select: {title: 'questionText', channel: 'channel', language: 'language', verdict: 'kbVerdict'},
     prepare: ({title, channel, language, verdict}) => ({
       title,
-      subtitle: [channel === 'contactCentre' ? 'Contact centre' : 'Chatbot', languageTitle(language), verdict]
+      subtitle: [
+        channel === 'contactCentre' ? 'Contact centre' : 'Chatbot',
+        languageTitle(language),
+        verdict,
+      ]
         .filter(Boolean)
         .join(' · '),
     }),

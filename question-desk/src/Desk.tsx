@@ -20,6 +20,7 @@ type Question = {
   faqQuestion?: string
   faqBefore?: string
   faqAfter?: string
+  insights?: {contentGap?: string; successScore?: number; sentiment?: string}
 }
 type Review = {
   _id: string
@@ -31,12 +32,12 @@ type Review = {
 type LanguageRun = {_id: string; language: string; stage: string; completed: boolean}
 
 const STATUS: Record<string, string> = {
-  new: 'New',
-  checking: 'Checking',
-  answered: 'Already answered',
-  findings: 'Findings',
+  'new': 'New',
+  'checking': 'Checking',
+  'answered': 'Already answered',
+  'findings': 'Findings',
   'in-review': 'In review',
-  published: 'Published',
+  'published': 'Published',
 }
 const VERDICT: Record<string, string> = {
   answered: 'Answered',
@@ -53,7 +54,7 @@ const STAGE: Record<string, string> = {
 }
 
 const QUESTIONS = `*[_type == "customerQuestion" && !(_id in path("drafts.**"))] | order(receivedAt desc){
-  _id, questionText, channel, market, language, receivedAt, status, signals,
+  _id, questionText, channel, market, language, receivedAt, status, signals, insights,
   kbVerdict, kbReason, kbAnswer, citations, faqBefore, faqAfter,
   "faqId": draftFaq._ref,
   "faqQuestion": coalesce(*[_id == "drafts." + ^.draftFaq._ref][0].question, *[_id == ^.draftFaq._ref][0].question)
@@ -74,7 +75,11 @@ const LANGUAGE_RUNS = `*[_type == "sanity.workflow.instance" && tag == "demo" &&
   _id, "language": fields[name == "language"][0].value, "stage": currentStage, "completed": defined(completedAt)
 }`
 
-const bare = (id: string) => id.split(':').pop()!.replace(/^drafts\./, '')
+const bare = (id: string) =>
+  id
+    .split(':')
+    .pop()!
+    .replace(/^drafts\./, '')
 const timeAgo = (iso?: string) => {
   if (!iso) return ''
   const minutes = Math.max(1, Math.round((Date.now() - Date.parse(iso)) / 60_000))
@@ -103,7 +108,9 @@ export function Desk() {
           </button>
         </nav>
       </header>
-      <Suspense fallback={<div className="loading">Loading…</div>}>{tab === 'inbox' ? <Inbox /> : <ForMe />}</Suspense>
+      <Suspense fallback={<div className="loading">Loading…</div>}>
+        {tab === 'inbox' ? <Inbox /> : <ForMe />}
+      </Suspense>
     </div>
   )
 }
@@ -137,7 +144,10 @@ function Inbox() {
       <ul className="list">
         {questions.map((q) => (
           <li key={q._id}>
-            <button className={q._id === selected?._id ? 'row selected' : 'row'} onClick={() => setSelectedId(q._id)}>
+            <button
+              className={q._id === selected?._id ? 'row selected' : 'row'}
+              onClick={() => setSelectedId(q._id)}
+            >
               <div className="row-text">{q.questionText}</div>
               <div className="row-meta">
                 <StatusPill status={q.status ?? 'new'} />
@@ -182,10 +192,20 @@ function Detail({question: q}: {question: Question}) {
       <div className="detail-head">
         <StatusPill status={status} />
         <span className="muted">
-          {q.channel === 'contactCentre' ? 'Contact centre' : 'Chatbot'} · {q.market} · {LANGUAGE[q.language ?? ''] ?? q.language}
+          {q.channel === 'contactCentre' ? 'Contact centre' : 'Chatbot'} · {q.market} ·{' '}
+          {LANGUAGE[q.language ?? ''] ?? q.language}
         </span>
       </div>
       <h1 className="question">“{q.questionText}”</h1>
+
+      {q.insights?.contentGap && (
+        <Card title="From Insights">
+          <p className="reason">The help chat couldn't answer this: {q.insights.contentGap}</p>
+          <p className="muted">
+            Success score {q.insights.successScore}/10 · {q.insights.sentiment} sentiment
+          </p>
+        </Card>
+      )}
 
       {status === 'new' && (
         <button className="primary" disabled={busy} onClick={onCheck}>
@@ -203,7 +223,10 @@ function Detail({question: q}: {question: Question}) {
             <Signal label="Topic" value={q.signals.topic} />
             <Signal label="Brand" value={q.signals.brand} />
             <Signal label="Market" value={q.signals.market} />
-            <Signal label="Language" value={LANGUAGE[q.signals.language ?? ''] ?? q.signals.language} />
+            <Signal
+              label="Language"
+              value={LANGUAGE[q.signals.language ?? ''] ?? q.signals.language}
+            />
           </dl>
         </Card>
       )}
@@ -326,12 +349,19 @@ function ForMe() {
 function ReviewCard({review}: {review: Review}) {
   const engine = useEngine()
   const sourceId = bare(review.sourceId)
-  const {data} = useQuery<{source?: {question: string; answer: string}; translation?: {question: string; answer: string}}>({
+  const {data} = useQuery<{
+    source?: {question: string; answer: string}
+    translation?: {question: string; answer: string}
+  }>({
     query: `{
       "source": coalesce(*[_id == "drafts." + $source][0], *[_id == $source][0]){question, answer},
       "translation": coalesce(*[_id == $translation][0], *[_id == "drafts." + $bareTranslation][0], *[_id == $bareTranslation][0]){question, answer}
     }`,
-    params: {source: sourceId, translation: review.translationId, bareTranslation: bare(review.translationId)},
+    params: {
+      source: sourceId,
+      translation: review.translationId,
+      bareTranslation: bare(review.translationId),
+    },
     perspective: 'raw',
   })
   const [note, setNote] = useState('')
@@ -377,7 +407,8 @@ function ReviewCard({review}: {review: Review}) {
         {lastChecks.map((check, i) =>
           check ? (
             <li key={i} className={check.outputs?.flagged ? 'flag' : 'pass'}>
-              {i === 0 ? 'Brand check' : 'Consistency check'}: {check.outputs?.flagged ? 'flagged' : 'passed'}
+              {i === 0 ? 'Brand check' : 'Consistency check'}:{' '}
+              {check.outputs?.flagged ? 'flagged' : 'passed'}
               {check.outputs?.flagged ? ` — ${check.outputs.reason}` : ''}
             </li>
           ) : null,
@@ -412,7 +443,11 @@ function ReviewCard({review}: {review: Review}) {
           <button className="secondary" disabled={busy} onClick={() => setSending(true)}>
             Send back with a note
           </button>
-          <button className="primary" disabled={busy} onClick={() => run(() => approve(engine, review._id))}>
+          <button
+            className="primary"
+            disabled={busy}
+            onClick={() => run(() => approve(engine, review._id))}
+          >
             Approve
           </button>
         </div>

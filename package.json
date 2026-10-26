@@ -5,7 +5,8 @@
     "studio",
     "frontend",
     "workflows",
-    "question-desk"
+    "question-desk",
+    "functions/*"
   ],
   "scripts": {
     "dev": "npx run-p --print-label dev:*",
@@ -15,7 +16,7 @@
     "format": "prettier --cache --write .",
     "import-sample-data": "cd studio && sanity dataset import sample-data.tar.gz --dataset production --replace",
     "lint": "npm run lint --workspace=frontend",
-    "type-check": "npm run type-check --workspaces",
+    "type-check": "npm run type-check --workspaces --if-present",
     "seed": "npm run seed --workspace=workflows",
     "reset": "npm run reset --workspace=workflows",
     "translate": "npm run translate --workspace=workflows --",
@@ -23,7 +24,8 @@
     "drain": "npm run drain --workspace=workflows --",
     "ask": "npm run ask --workspace=workflows --",
     "kb:ask": "npm run kb:ask --workspace=workflows --",
-    "localize": "npm run localize -w workflows --"
+    "localize": "npm run localize -w workflows --",
+    "insights": "npm run insights --workspace=workflows"
   },
   "overrides": {
     "@sanity/sdk": {
@@ -37,6 +39,7 @@
   "devDependencies": {
     "@sanity/prettier-config": "^2.0.3",
     "npm-run-all2": "^5.0.2",
-    "prettier": "^3.8.1"
+    "prettier": "^3.8.1",
+    "@sanity/blueprints": "^0.28.0"
   }
 }
