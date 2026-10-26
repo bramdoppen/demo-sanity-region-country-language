@@ -2,11 +2,10 @@ import './globals.css'
 
 import {SpeedInsights} from '@vercel/speed-insights/next'
 import type {Metadata} from 'next'
-import {Inter, IBM_Plex_Mono} from 'next/font/google'
+import {Inter, IBM_Plex_Mono, Unbounded} from 'next/font/google'
 import {draftMode} from 'next/headers'
 import {toPlainText} from 'next-sanity'
 import {VisualEditing} from 'next-sanity/visual-editing'
-import {Suspense} from 'react'
 import {Toaster} from 'sonner'
 
 import DraftModeToast from '@/app/components/DraftModeToast'
@@ -56,6 +55,13 @@ const inter = Inter({
   display: 'swap',
 })
 
+const unbounded = Unbounded({
+  variable: '--font-unbounded',
+  weight: ['400'],
+  subsets: ['latin'],
+  display: 'swap',
+})
+
 const ibmPlexMono = IBM_Plex_Mono({
   variable: '--font-ibm-plex-mono',
   weight: ['400'],
@@ -67,9 +73,12 @@ export default async function RootLayout({children}: {children: React.ReactNode}
   const {isEnabled: isDraftMode} = await draftMode()
 
   return (
-    <html lang="en" className={`${inter.variable} ${ibmPlexMono.variable} bg-white text-black`}>
+    <html
+      lang="en"
+      className={`${inter.variable} ${unbounded.variable} ${ibmPlexMono.variable} bg-white text-paxon-navy font-sans`}
+    >
       <body>
-        <section className="min-h-screen pt-24">
+        <section className="min-h-screen pt-20">
           {/* The <Toaster> component is responsible for rendering toast notifications used in /app/client-utils.ts and /app/components/DraftModeToast.tsx */}
           <Toaster />
           {isDraftMode && (
@@ -81,13 +90,7 @@ export default async function RootLayout({children}: {children: React.ReactNode}
           )}
           {/* The <SanityLive> component is responsible for making all sanityFetch calls in your application live, so should always be rendered. */}
           <SanityLive includeDrafts={isDraftMode} onError={handleError} />
-          {isDraftMode ? (
-            <Suspense>
-              <DynamicHeader />
-            </Suspense>
-          ) : (
-            <Header perspective="published" stega={false} />
-          )}
+          <Header />
           <main className="">{children}</main>
           <Footer />
         </section>
@@ -95,9 +98,4 @@ export default async function RootLayout({children}: {children: React.ReactNode}
       </body>
     </html>
   )
-}
-
-async function DynamicHeader() {
-  const {perspective, stega} = await getDynamicFetchOptions()
-  return <Header perspective={perspective} stega={stega} />
 }

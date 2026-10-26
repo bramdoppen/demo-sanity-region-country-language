@@ -44,11 +44,8 @@ export default function CTA({block}: CtaProps) {
 
             {button?.buttonText && button?.link && (
               <div className="flex mt-4">
-                <ResolvedLink
-                  link={button?.link}
-                  className="rounded-full flex gap-2 font-mono text-sm whitespace-nowrap items-center bg-black dark:bg-white hover:bg-blue focus:bg-blue py-3 px-6 text-white dark:text-black dark:hover:text-white transition-colors duration-200"
-                >
-                  {button?.buttonText}
+                <ResolvedLink link={button?.link} className="btn-paxon text-sm">
+                  {button?.buttonText} <span aria-hidden="true">→</span>
                 </ResolvedLink>
               </div>
             )}

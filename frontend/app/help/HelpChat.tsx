@@ -23,16 +23,16 @@ export default function HelpChat() {
   const busy = status === 'submitted' || status === 'streaming'
 
   return (
-    <div className="mx-auto flex max-w-3xl flex-col gap-6 px-6 py-12 text-lg">
+    <div className="mx-auto flex max-w-3xl flex-col gap-6 px-6 py-16 text-lg">
       <div className="flex items-end justify-between gap-4">
         <div>
-          <h1 className="text-4xl font-bold">Paxon help</h1>
-          <p className="mt-2 text-gray-600">
+          <h1 className="text-4xl sm:text-5xl">Paxon help</h1>
+          <p className="mt-3 text-paxon-navy/70">
             Ask anything about storage, shipping, returns or integrations.
           </p>
         </div>
         <select
-          className="rounded-md border border-gray-300 px-3 py-2 text-base"
+          className="rounded border border-paxon-warm-grey bg-white px-3 py-2 text-base"
           value={MARKETS.indexOf(locale)}
           onChange={(e) => setLocale(MARKETS[Number(e.target.value)])}
           disabled={messages.length > 0}
@@ -46,9 +46,9 @@ export default function HelpChat() {
         </select>
       </div>
 
-      <div className="flex min-h-80 flex-col gap-4 rounded-xl border border-gray-200 bg-gray-50 p-6">
+      <div className="flex min-h-80 flex-col gap-4 bg-paxon-warm p-6">
         {messages.length === 0 && (
-          <p className="text-gray-500">
+          <p className="text-paxon-navy/60">
             Try: “What are your order cut-off times during Black Friday?”
           </p>
         )}
@@ -59,21 +59,27 @@ export default function HelpChat() {
           )
           if (message.role === 'user') {
             return (
-              <div key={message.id} className="self-end rounded-2xl bg-black px-4 py-3 text-white">
+              <div
+                key={message.id}
+                className="self-end max-w-[85%] bg-paxon-blue px-4 py-3 text-white"
+              >
                 {text}
               </div>
             )
           }
           return (
-            <div key={message.id} className="self-start rounded-2xl bg-white px-4 py-3 shadow-sm">
+            <div
+              key={message.id}
+              className="self-start max-w-[85%] whitespace-pre-line bg-white px-4 py-3"
+            >
               {text ||
                 (searching ? (
-                  <span className="text-gray-500">Checking the Knowledge Base…</span>
+                  <span className="text-paxon-navy/60">Checking the Knowledge Base…</span>
                 ) : null)}
             </div>
           )
         })}
-        {status === 'submitted' && <div className="self-start text-gray-500">…</div>}
+        {status === 'submitted' && <div className="self-start text-paxon-navy/60">…</div>}
         {error && (
           <div className="self-start text-red-700">Something went wrong. Please try again.</div>
         )}
@@ -89,7 +95,7 @@ export default function HelpChat() {
         }}
       >
         <input
-          className="flex-1 rounded-md border border-gray-300 px-4 py-3"
+          className="flex-1 rounded border border-paxon-warm-grey px-4 py-3 focus:border-paxon-blue focus:outline-none"
           value={input}
           onChange={(e) => setInput(e.target.value)}
           placeholder="Type your question"
@@ -98,9 +104,9 @@ export default function HelpChat() {
         <button
           type="submit"
           disabled={busy || !input.trim()}
-          className="rounded-md bg-black px-6 py-3 font-semibold text-white disabled:opacity-40"
+          className="btn-paxon disabled:opacity-40"
         >
-          Send
+          Send <span aria-hidden="true">→</span>
         </button>
       </form>
     </div>

@@ -9,13 +9,32 @@
   h4,
   h5,
   h6 {
-    @apply font-medium tracking-tight;
+    @apply font-display font-normal tracking-tight text-paxon-blue;
+  }
+  body {
+    @apply text-paxon-navy;
   }
 }
 
 @utility container {
   margin: 0 auto;
   padding: 0 2rem;
+}
+
+@utility btn-paxon {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  border-radius: 0.25rem;
+  background: var(--color-paxon-orange);
+  color: var(--color-paxon-navy);
+  padding: 0.75rem 1.25rem;
+  font-weight: 500;
+  white-space: nowrap;
+  transition: background-color 200ms;
+  &:hover {
+    background: #ff9a33;
+  }
 }
 
 @custom-variant dark (&:where(.dark, .dark *));
@@ -40,6 +59,18 @@
   --color-gray-800: #252837;
   --color-gray-900: #1b1d27;
   --color-gray-950: #13141b;
+
+  --color-paxon-blue: #0068ea;
+  --color-paxon-blue-dark: #05c;
+  --color-paxon-navy: #0b1a4d;
+  --color-paxon-navy-deep: #020c2e;
+  --color-paxon-orange: #ffa64c;
+  --color-paxon-warm: #f6f3f0;
+  --color-paxon-warm-grey: #e8e0da;
+
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-unbounded), var(--font-inter), sans-serif;
+  --font-mono: var(--font-ibm-plex-mono), ui-monospace, monospace;
 
   --default-transition-duration: 250ms;
 }
