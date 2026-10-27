@@ -1,5 +1,6 @@
 import {SanityApp, type SanityConfig} from '@sanity/sdk-react'
 import {Desk} from './Desk.tsx'
+import '@fontsource-variable/unbounded'
 import './desk.css'
 
 const config: SanityConfig[] = [{projectId: 'jitb27qd', dataset: 'production'}]

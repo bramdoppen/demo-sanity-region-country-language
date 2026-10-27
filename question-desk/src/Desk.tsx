@@ -94,7 +94,14 @@ export function Desk() {
     <div className="desk">
       <header className="topbar">
         <div className="brand">
-          <span className="logo">Paxon</span> Question Desk
+          <span className="logo">
+            <svg viewBox="0 0 24 24" aria-hidden="true" fill="currentColor">
+              <path d="M10.2 2h3.6v6.4L17 5.2l2.6 2.6-4.4 4.4H22v3.6h-6.4l3.2 3.2-2.6 2.6-4.4-4.4V22h-3.6v-6.4L5 18.8l-2.6-2.6 4.4-4.4H2V8.2h6.4L5.2 5 7.8 2.4l2.4 2.4z" />
+            </svg>
+            paxon
+          </span>
+          <span className="brand-divider" />
+          Question Desk
         </div>
         <nav className="tabs">
           <button className={tab === 'inbox' ? 'active' : ''} onClick={() => setTab('inbox')}>
